@@ -13,6 +13,7 @@ from threading import Thread
 from urllib.parse import urlparse, parse_qs
 import requests
 from anvil.tables import app_tables
+from fpdf import FPDF
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivymd.uix.button import MDFlatButton
@@ -20,7 +21,27 @@ from kivymd.uix.dialog import MDDialog
 from kivymd.uix.screen import MDScreen
 from server import Server
 from kivymd.uix.button import MDRaisedButton
+from platform import platform
 
+class PDF(FPDF):
+    def header(self):
+        self.set_font('Arial', 'B', 12)
+        self.cell(0, 10, 'Oxivive Booking Confirmation', 0, 1, 'C')
+
+    def footer(self):
+        self.set_y(-15)
+        self.set_font('Arial', 'I', 8)
+        self.cell(0, 10, 'Page %s' % self.page_no(), 0, 0, 'C')
+
+    def chapter_title(self, title):
+        self.set_font('Arial', 'B', 12)
+        self.cell(0, 10, title, 0, 1, 'L')
+        self.ln(10)
+
+    def chapter_body(self, body):
+        self.set_font('Arial', '', 12)
+        self.multi_cell(0, 10, body)
+        self.ln()
 
 class Payment(MDScreen):
     servicer_id = None
@@ -106,7 +127,9 @@ class Payment(MDScreen):
                 email_subject = "Booking Confirmation From Oxivive"
                 email_message = (f"Dear {username},\n\nYour slot is successfully booked on {self.date_time} for "
                                  f"{self.service_type}.\n\nThank you for choosing our service at OXIVIVE.")
-                self.send_email(oxi_email, email_subject, email_message)
+                pdf_path = self.generate_pdf(username, slot_id, book_date, book_time, self.service_type, self.date_time,
+                                             self.razorpay_payment_id)
+                self.send_email_with_pdf(oxi_email, email_subject, email_message, pdf_path)
                 Clock.schedule_once(self.sending_notification)
                 self.manager.push_replacement('client_services')
             else:
@@ -393,9 +416,9 @@ class Payment(MDScreen):
         self.appointment_time = self.convert_datetime(self.date_time)
         print(self.appointment_time)
         message = f"Your appointment is booked for {self.appointment_time.strftime('%Y-%m-%d %H:%M')}"
-        self.manager.load_screen('menu_notification')
-        self.manager.get_screen('menu_notification').schedule_notifications(self.appointment_time)
-        self.manager.get_screen('menu_notification').show_notification("Appointment Booked", message)
+        # self.manager.load_screen('menu_notification')
+        # self.manager.get_screen('menu_notification').schedule_notifications(self.appointment_time)
+        # self.manager.get_screen('menu_notification').show_notification("Appointment Booked", message)
 
         print("Switched to success screen.")
 
@@ -478,23 +501,46 @@ class Payment(MDScreen):
         distance = R * c
         return distance
 
-    def send_email(self, email, subject, message):
-        try:
-            from_mail = "oxivive@gmail.com"
-            server = smtplib.SMTP('smtp.gmail.com', 587)
-            server.starttls()
-            server.login(from_mail, "bqrt soih plhy dnix")
+    def send_email_with_pdf(self, recipient_email, subject, message, pdf_path):
+        sender_email = "oxivive@gmail.com"
+        sender_password = "bqrt soih plhy dnix"
 
-            msg = EmailMessage()
-            msg['Subject'] = subject
-            msg['From'] = from_mail
-            msg['To'] = email
-            msg.set_content(message)
-            server.send_message(msg)
-            server.quit()
-            print(f"Email sent successfully to {email}")
+        msg = EmailMessage()
+        msg['Subject'] = subject
+        msg['From'] = sender_email
+        msg['To'] = recipient_email
+        msg.set_content(message)
+
+        with open(pdf_path, 'rb') as pdf_file:
+            pdf_data = pdf_file.read()
+            msg.add_attachment(pdf_data, maintype='application', subtype='pdf', filename=os.path.basename(pdf_path))
+
+        try:
+            with smtplib.SMTP('smtp.gmail.com', 587) as server:
+                server.starttls()
+                server.login(sender_email, sender_password)
+                server.send_message(msg)
+                print("Email sent successfully")
         except Exception as e:
-            print(f"Failed to send email: {e}")
+            print(f"Error sending email: {e}")
+
+    # def send_email(self, email, subject, message):
+    #     try:
+    #         from_mail = "oxivive@gmail.com"
+    #         server = smtplib.SMTP('smtp.gmail.com', 587)
+    #         server.starttls()
+    #         server.login(from_mail, "bqrt soih plhy dnix")
+    #
+    #         msg = EmailMessage()
+    #         msg['Subject'] = subject
+    #         msg['From'] = from_mail
+    #         msg['To'] = email
+    #         msg.set_content(message)
+    #         server.send_message(msg)
+    #         server.quit()
+    #         print(f"Email sent successfully to {email}")
+    #     except Exception as e:
+    #         print(f"Failed to send email: {e}")
 
     def user_details(self):
         script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -503,3 +549,106 @@ class Payment(MDScreen):
             user_info = json.load(file)
 
             self.ids.username.text = f"{user_info.get('username')}"
+
+    def calculate_tax(self):
+        self.tax = (int(self.amt) * 18) / 100
+        return self.tax
+
+    def generate_pdf(self, username, slot_id, book_date, book_time, service_type, date_time, payment_id):
+        try:
+            amount = int(self.amt)
+            # Initialize PDF object
+            pdf = FPDF()
+            pdf.add_page()
+
+            # Header
+            pdf.set_fill_color(204, 0, 0)
+            pdf.rect(0, 0, 210, 40, 'F')
+            if platform() == 'android':
+                pdf.image('file:///storage/emulated/0/Download/shot.png', 10, 8, 33)  # Adjust path for Android
+            else:
+                pdf.image('images/shot.png', 10, 8, 33)  # Adjust path for other platforms
+            pdf.set_font('Arial', 'B', 16)
+            pdf.set_text_color(255, 255, 255)
+            pdf.cell(80)
+            pdf.cell(30, 10, 'Oxivive', 0, 1, 'C')
+            pdf.set_font('Arial', 'I', 12)
+            pdf.cell(80)
+            pdf.cell(30, 10, 'INVOICE', 0, 1, 'C')
+            pdf.ln(20)
+
+            # Reset text color to black for the body
+            pdf.set_text_color(0, 0, 0)
+
+            # Invoice details
+            pdf.set_font('Arial', 'B', 12)
+            pdf.cell(0, 10, f'Invoice Number: {slot_id}', 0, 1, 'L')
+            pdf.cell(0, 10, f'Date: {date_time}', 0, 1, 'L')
+            pdf.cell(0, 10, f'Payment Id: {payment_id}', 0, 1, 'L')
+            pdf.ln(10)
+
+            # Billing information
+            pdf.set_font('Arial', 'B', 12)
+            pdf.cell(0, 10, f'Billed To: {username}', 0, 1, 'L')  # Start of Billing information
+            # pdf.set_font('Arial', '', 12)
+            # pdf.multi_cell(0, 10, f"{username}", 0, 'L')
+
+            # Table header
+            pdf.set_fill_color(204, 0, 0)
+            pdf.set_text_color(255, 255, 255)
+            pdf.set_font('Arial', 'B', 12)
+            pdf.cell(60, 10, 'DETAILS', 1, 0, 'C', 1)
+            pdf.cell(40, 10, 'SESSION DATE', 1, 0, 'C', 1)
+            pdf.cell(40, 10, 'SESSION TIME', 1, 0, 'C', 1)
+            pdf.cell(50, 10, 'AMOUNT', 1, 1, 'C', 1)
+
+            # Table row
+            pdf.set_fill_color(255, 204, 204)
+            pdf.set_text_color(0, 0, 0)
+            pdf.set_font('Arial', '', 12)
+            pdf.cell(60, 10, service_type, 1, 0, 'C', 1)
+            pdf.cell(40, 10, book_date, 1, 0, 'C', 1)
+            pdf.cell(40, 10, book_time, 1, 0, 'C', 1)
+            pdf.cell(50, 10, f'${amount:.2f}', 1, 1, 'C', 1)
+
+            # Totals
+            pdf.set_font('Arial', 'B', 12)
+            pdf.cell(0, 10, '', 0, 1)
+            pdf.set_fill_color(255, 204, 204)
+            pdf.set_text_color(0, 0, 0)  # Set text color to black for totals
+            pdf.cell(160, 10, 'GRAND TOTAL:', 0, 0, 'R')
+            pdf.cell(30, 10, f'${amount:.2f}', 0, 1, 'R', 1)
+
+            pdf.cell(0, 10, '', 0, 1)
+
+            # Footer
+            footer_height = 30
+            pdf.set_y(-footer_height - 0)  # Adjust the y-coordinate to position the footer correctly
+            pdf.set_fill_color(255, 0, 0)
+            pdf.rect(0, pdf.get_y(), 210, footer_height, 'F')
+
+            # Calculate vertical position for the centered text within the footer
+            footer_y = pdf.get_y() + (footer_height / 2) - 15.5  # Adjust 5 based on the text size
+
+            pdf.set_y(footer_y)
+            pdf.set_text_color(0, 0, 0)
+            pdf.set_font('Arial', 'I', 12)
+            pdf.cell(0, 10, 'Thank you for your business!', 0, 0, 'C')
+        except Exception as e:
+            print(f"Error saving PDF: {e}")
+        # pdf.chapter_body(
+        #     f"Dear {username},\n\n"
+        #     f"Your booking has been confirmed with the following details:\n"
+        #     f"Slot ID: {slot_id}\n"
+        #     f"Date: {book_date}\n"
+        #     f"Time: {book_time}\n"
+        #     f"Service Type: {service_type}\n"
+        #     f"Date & Time: {date_time}\n"
+        #     f"Payment ID: {payment_id}\n\n"
+        #     f"Thank you for choosing our service at OXIVIVE."
+        # )
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        pdf_path = os.path.join(script_dir, "booking_confirmation.pdf")
+        pdf.output(pdf_path)
+        return pdf_path
+
