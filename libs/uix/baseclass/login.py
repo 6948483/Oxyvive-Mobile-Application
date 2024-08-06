@@ -21,6 +21,7 @@ from anvil.tables import app_tables
 
 from server import Server
 
+
 class Login(MDScreen):
     def __init__(self, **kwargs):
         super(Login, self).__init__(**kwargs)
@@ -63,7 +64,6 @@ class Login(MDScreen):
             return
 
         user_anvil = None
-        user_sqlite = None
         try:
             if self.server.is_connected():
                 # Fetch user from Anvil's database
@@ -76,32 +76,22 @@ class Login(MDScreen):
                     except ValueError:
                         self.show_popup("Invalid phone number format")
                         return
-            else:
-                # Fetch user from SQLite database
-                cursor = self.server.get_database_connection().cursor()
-                cursor.execute('''
-                                SELECT * FROM users
-                                WHERE email = ? OR phone = ?
-                                ''', (user_input, user_input))
-                user_sqlite = cursor.fetchone()
         finally:
             # Close the connection
             if self.server.get_database_connection() and self.server.is_connected():
                 self.server.get_database_connection().close()
 
-        if user_anvil or user_sqlite:
+        if user_anvil:
             if user_anvil is not None:
                 password_value = bcrypt.checkpw(entered_password.encode('utf-8'),
                                                 user_anvil['oxi_password'].encode('utf-8'))
                 user_type = user_anvil['oxi_usertype']
-            if user_sqlite is not None:
-                password_value2 = bcrypt.checkpw(entered_password.encode('utf-8'),
-                                                 user_sqlite[3].encode('utf-8'))
+
             self.ids.login_password.helper_text = "In-Correct Password"
             print('Password : ', password_value)
             print('Password : ', password_value2)
             if user_type == 'client':
-                if password_value or password_value2:
+                if password_value:
 
                     if user_anvil:
                         username = str(user_anvil["oxi_username"])
@@ -118,7 +108,7 @@ class Login(MDScreen):
                     logged_in = True
                     logged_in_data = {'logged_in': logged_in}
                     user_info = {'username': username, 'email': email, 'phone': phone, 'pincode': pincode,
-                                 'password': password, 'profile': profile_data,'id':id }
+                                 'password': password, 'profile': profile_data, 'id': id}
                     with open("logged_in_data.json", "w") as json_file:
                         json.dump(logged_in_data, json_file)
 
@@ -171,10 +161,6 @@ class Login(MDScreen):
             self.ids.login_email.helper_text = "In-Correct email"
             self.ids.login_email.error = True
 
-
-
-
-
     user_input = StringProperty('')
     otp_value = StringProperty('')
     otp_screen_visible = BooleanProperty(False)
@@ -215,7 +201,6 @@ class Login(MDScreen):
             )
         except Exception as e:
             self.show_popup("Failed to send SMS, try again!")
-
 
     def show_popup(self, message, on_ok=None):
         popup_content = BoxLayout(orientation='vertical', padding=10, spacing=10)
@@ -362,6 +347,7 @@ class Login(MDScreen):
     def helper(self):
         self.ids.login_email.helper_text = ""
         self.ids.login_password.helper_text = ""
+
     def forgot_password(self):
         self.manager.load_screen("forgot_password")
         self.manager.push_replacement("forgot_password")
@@ -369,6 +355,3 @@ class Login(MDScreen):
         self.ids.login_password.text = ''
         self.ids.login_email.helper_text = ""
         self.ids.login_password.helper_text = ""
-
-
-
