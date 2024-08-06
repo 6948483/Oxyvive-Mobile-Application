@@ -3,12 +3,11 @@
         orientation:'vertical'
         md_bg_color:1,1,1,1
         MDTopAppBar:
-            title: "Reset Password"
+            title: "Reset Password       "
             left_action_items: [["arrow-left", lambda x: root.back_screen()]]
-            anchor_title: 'left'
-            md_bg_color: 1, 1, 1, 1  # White background
-            specific_text_color: 0, 0, 0, 1  # Black labels
-            elevation: 1
+            title_halign : 'center'
+            specific_text_color: 1, 1, 1, 1  # Black label
+            md_bg_color: (1, 0, 0, 1) # Red color for the top bar
         MDGridLayout:
             cols:1
             padding:dp(0),dp(40),dp(0),dp(0)

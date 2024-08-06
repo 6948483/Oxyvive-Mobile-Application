@@ -58,7 +58,7 @@ class BookingDetails(Screen):
             raise ValueError("Manager must be provided")
 
         toolbar = MDTopAppBar(
-            title="My Bookings",
+            title="My Bookings       ",
             elevation=0,
             pos_hint={'top': 1}
         )
@@ -385,7 +385,7 @@ class Client_services(MDScreen):
         self.ids.bottom_nav.switch_tab('service_screen')
 
     def activity_report(self):
-        # current_user_id="000000"
+        #current_user_id="000000"
         # Assuming your JSON file structure looks like {'user_id': 'some_user_id'}
         script_dir = os.path.dirname(os.path.abspath(__file__))
         json_user_file_path = os.path.join(script_dir, "user_data.json")
