@@ -434,11 +434,11 @@ class Client_services(MDScreen):
         self.ids.profile.add_widget(Profile_screen(manager=self.manager))
 
     def start_periodic_check(self, dt):
-        thread = threading.Thread(target=self.periodic_check, args=(3,))
+        thread = threading.Thread(target=self.periodic_check, args=(3600,))
         thread.daemon = True
         thread.start()
 
-    def periodic_check(self, interval=3):
+    def periodic_check(self, interval=3600):
         script_dir = os.path.dirname(os.path.abspath(__file__))
         json_user_file_path = os.path.join(script_dir, "user_data.json")
 
