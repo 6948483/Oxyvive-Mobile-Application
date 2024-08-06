@@ -56,7 +56,7 @@ class Notification(MDScreen):
         if not notifications_list:
             self.show_no_notifications_message()
         else:
-            self.notifications = [notif['message'] for notif in notifications]
+            self.notifications = [notif['oxi_notification'] for notif in notifications]
             self.update_notification_list()
 
     def show_no_notifications_message(self):
