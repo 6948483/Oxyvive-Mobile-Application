@@ -16,7 +16,6 @@ from anvil.tables import app_tables
 from fpdf import FPDF
 from kivy.clock import Clock
 from kivy.core.window import Window
-from kivymd.uix.button import MDFlatButton
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.screen import MDScreen
 from server import Server
@@ -24,24 +23,7 @@ from kivymd.uix.button import MDRaisedButton
 from platform import platform
 
 class PDF(FPDF):
-    def header(self):
-        self.set_font('Arial', 'B', 12)
-        self.cell(0, 10, 'Oxivive Booking Confirmation', 0, 1, 'C')
-
-    def footer(self):
-        self.set_y(-15)
-        self.set_font('Arial', 'I', 8)
-        self.cell(0, 10, 'Page %s' % self.page_no(), 0, 0, 'C')
-
-    def chapter_title(self, title):
-        self.set_font('Arial', 'B', 12)
-        self.cell(0, 10, title, 0, 1, 'L')
-        self.ln(10)
-
-    def chapter_body(self, body):
-        self.set_font('Arial', '', 12)
-        self.multi_cell(0, 10, body)
-        self.ln()
+    pass
 
 class Payment(MDScreen):
     servicer_id = None
@@ -416,9 +398,9 @@ class Payment(MDScreen):
         self.appointment_time = self.convert_datetime(self.date_time)
         print(self.appointment_time)
         message = f"Your appointment is booked for {self.appointment_time.strftime('%Y-%m-%d %H:%M')}"
-        # self.manager.load_screen('menu_notification')
-        # self.manager.get_screen('menu_notification').schedule_notifications(self.appointment_time)
-        # self.manager.get_screen('menu_notification').show_notification("Appointment Booked", message)
+        self.manager.load_screen('menu_notification')
+        self.manager.get_screen('menu_notification').schedule_notifications(self.appointment_time)
+        self.manager.get_screen('menu_notification').show_notification("Appointment Booked", message)
 
         print("Switched to success screen.")
 
@@ -524,24 +506,6 @@ class Payment(MDScreen):
         except Exception as e:
             print(f"Error sending email: {e}")
 
-    # def send_email(self, email, subject, message):
-    #     try:
-    #         from_mail = "oxivive@gmail.com"
-    #         server = smtplib.SMTP('smtp.gmail.com', 587)
-    #         server.starttls()
-    #         server.login(from_mail, "bqrt soih plhy dnix")
-    #
-    #         msg = EmailMessage()
-    #         msg['Subject'] = subject
-    #         msg['From'] = from_mail
-    #         msg['To'] = email
-    #         msg.set_content(message)
-    #         server.send_message(msg)
-    #         server.quit()
-    #         print(f"Email sent successfully to {email}")
-    #     except Exception as e:
-    #         print(f"Failed to send email: {e}")
-
     def user_details(self):
         script_dir = os.path.dirname(os.path.abspath(__file__))
         json_user_file_path = os.path.join(script_dir, "user_data.json")
@@ -567,12 +531,12 @@ class Payment(MDScreen):
             if platform() == 'android':
                 pdf.image('file:///storage/emulated/0/Download/shot.png', 10, 8, 33)  # Adjust path for Android
             else:
-                pdf.image('images/shot.png', 10, 8, 33)  # Adjust path for other platforms
+                pdf.image('images/shot.png', 10, 4, 33)  # Adjust path for other platforms
             pdf.set_font('Arial', 'B', 16)
             pdf.set_text_color(255, 255, 255)
             pdf.cell(80)
             pdf.cell(30, 10, 'Oxivive', 0, 1, 'C')
-            pdf.set_font('Arial', 'I', 12)
+            pdf.set_font('Arial', 'B', 12)
             pdf.cell(80)
             pdf.cell(30, 10, 'INVOICE', 0, 1, 'C')
             pdf.ln(20)
@@ -583,7 +547,7 @@ class Payment(MDScreen):
             # Invoice details
             pdf.set_font('Arial', 'B', 12)
             pdf.cell(0, 10, f'Invoice Number: {slot_id}', 0, 1, 'L')
-            pdf.cell(0, 10, f'Date: {date_time}', 0, 1, 'L')
+            pdf.cell(0, 10, f'Slot Book Date: {date_time}', 0, 1, 'L')
             pdf.cell(0, 10, f'Payment Id: {payment_id}', 0, 1, 'L')
             pdf.ln(10)
 
@@ -636,19 +600,7 @@ class Payment(MDScreen):
             pdf.cell(0, 10, 'Thank you for your business!', 0, 0, 'C')
         except Exception as e:
             print(f"Error saving PDF: {e}")
-        # pdf.chapter_body(
-        #     f"Dear {username},\n\n"
-        #     f"Your booking has been confirmed with the following details:\n"
-        #     f"Slot ID: {slot_id}\n"
-        #     f"Date: {book_date}\n"
-        #     f"Time: {book_time}\n"
-        #     f"Service Type: {service_type}\n"
-        #     f"Date & Time: {date_time}\n"
-        #     f"Payment ID: {payment_id}\n\n"
-        #     f"Thank you for choosing our service at OXIVIVE."
-        # )
         script_dir = os.path.dirname(os.path.abspath(__file__))
         pdf_path = os.path.join(script_dir, "booking_confirmation.pdf")
         pdf.output(pdf_path)
         return pdf_path
-
