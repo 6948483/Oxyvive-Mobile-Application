@@ -287,6 +287,14 @@ class Payment(MDScreen):
 
     def update_html_file(self, order_id, amount):
         print(f"Updating HTML file with order ID: {order_id} and amount: {amount}")
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        json_user_file_path = os.path.join(script_dir, "user_data.json")
+        # Fetch email from user_data.json
+        with open(json_user_file_path, 'r') as file:
+            user_data = json.load(file)
+        username = user_data.get('username','N/A')
+        email = user_data.get('email', '')
+        phone = user_data.get('phone', 'N/A')
         html_content = f"""
         <!DOCTYPE html>
         <html lang="en">
@@ -312,9 +320,9 @@ class Payment(MDScreen):
                     window.location.href = "http://localhost:9000/success";
                 }},
                 "prefill": {{
-                    "name": "Your Name",
-                    "email": "your.email@example.com",
-                    "contact": "9999999999"
+                    "name": "{username}",
+                    "email": "{email}",
+                    "contact": "{phone}"
                 }},
                 "theme": {{
                     "color": "#3399cc"

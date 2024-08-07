@@ -1,7 +1,8 @@
+import random
 import re
 import smtplib
 from email.message import EmailMessage
-import anvil
+import bcrypt
 from anvil.tables import app_tables
 from kivy import platform
 from kivy.clock import Clock
@@ -11,31 +12,9 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
-from kivymd.app import MDApp
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.screen import MDScreen
 from twilio.rest import Client
-from server import Server
-import base64
-import json
-import os
-from server import Server
-
-import bcrypt
-import random
-import smtplib
-
-from io import BytesIO
-from kivy.core.window import Window
-from kivy.uix.boxlayout import BoxLayout
-from kivy.uix.button import Button
-from kivymd.uix.screen import MDScreen
-from kivy.properties import BooleanProperty, StringProperty
-from kivy.uix.label import Label
-from kivy.uix.popup import Popup
-from twilio.rest import Client
-from anvil.tables import app_tables
-
 from server import Server
 
 # Your Twilio credentials
@@ -64,7 +43,7 @@ class ForgotPassword(MDScreen):
         return False
 
     def on_back_button(self):
-        self.manager.push_replacement("login","right")
+        self.manager.push_replacement("login", "right")
 
     def show_validation_dialog(self, message):
         # Create the dialog asynchronously
@@ -163,9 +142,6 @@ class ForgotPassword(MDScreen):
         )
         popup.open()
 
-    import smtplib
-    from email.message import EmailMessage
-
     def send_email_otp(self, email):
         self.n = str(random.randint(100000, 999999))
         try:
@@ -246,12 +222,12 @@ class ForgotPassword(MDScreen):
         email_phone = self.ids.phone_email.text
         user_entered_otp = self.ids.otp.text
         if "@" in email_phone:
-            if user_entered_otp ==self.n:
+            if user_entered_otp == self.n:
                 self.update_ui_on_otp_verified()
             else:
                 self.handle_invalid_phone()
         else:
-            if user_entered_otp ==self.n:
+            if user_entered_otp == self.n:
                 self.update_ui_on_otp_verified()
             else:
                 self.handle_invalid_phone()

@@ -2,7 +2,15 @@ import base64
 import io
 import json
 import os
+import re
+import smtplib
+import threading
+import time
+from datetime import datetime
+from email.message import EmailMessage
+
 from anvil.tables import app_tables
+from fpdf import FPDF
 from kivy.clock import Clock
 from kivy.core.window import Window
 from kivy.properties import ObjectProperty
@@ -19,6 +27,7 @@ from kivymd.uix.label import MDLabel
 from kivymd.uix.relativelayout import MDRelativeLayout
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.toolbar import MDTopAppBar
+from plyer.utils import platform
 from server import Server
 
 
@@ -35,11 +44,11 @@ class Activity(MDBoxLayout):
 
     def on_keyboard(self, instance, key, scancode, codepoint, modifier):
         if key == 27:  # Keycode for the back button on Android
-            self.back_button()
+            self.back_btn()
             return True
         return False
 
-    def back_button(self):
+    def back_btn(self):
         print("Back button pressed")
         if self.manager:
             screen = self.manager.get_screen('client_services')
@@ -58,7 +67,7 @@ class BookingDetails(Screen):
             raise ValueError("Manager must be provided")
 
         toolbar = MDTopAppBar(
-            title="My Bookings",
+            title="My Bookings       ",
             elevation=0,
             pos_hint={'top': 1}
         )
@@ -178,22 +187,6 @@ class Profile_screen(Screen):
 
     def __init__(self, **kwargs):
         super(Profile_screen, self).__init__(**kwargs)
-        Window.bind(
-            on_keyboard=self.on_keyboard)
-
-    def on_keyboard(self, instance, key, scancode, codepoint, modifier):
-        if key == 27:  # Keycode for the back button on Android
-            self.back_btn()
-            return True
-        return False
-
-    def back_btn(self):
-        print("Back button pressed")
-        if self.manager:
-            screen = self.manager.get_screen('client_services')
-            screen.ids.bottom_nav.switch_tab('home screen')
-        else:
-            print("Manager is not set.")
 
     def on_card_release(self, card):
         card_id = card.id
@@ -209,8 +202,7 @@ class Profile_screen(Screen):
         elif card_id == 'logout_box':
             self.on_touch_down_log_out()
 
-
-    def on_kv_post(self,base_widget):
+    def on_kv_post(self, base_widget):
         print("kv post is not working")
         self.server = Server()
         print("IDs dictionary:", self.ids)  # Debugging line
@@ -345,9 +337,10 @@ class Client_services(MDScreen):
         super(Client_services, self).__init__(**kwargs)
 
         self.server = Server()
-
-
         # self.change()
+
+        # Start periodic check later to ensure UI is ready
+        Clock.schedule_once(self.start_periodic_check)
 
     def change(self):
         script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -375,8 +368,9 @@ class Client_services(MDScreen):
 
     def on_pre_enter(self, *args):
         # Ensure the Profile_screen instance is accessed correctly
+        #, 'images/gym.png'
 
-        images = ['images/1.png', 'images/2.png', 'images/3.png', 'images/gym.png']
+        images = ['images/1.png', 'images/2.png', 'images/3.png']
         for i in images:
             environment_img = CustomImageTile(
                 source=i
@@ -410,6 +404,7 @@ class Client_services(MDScreen):
         with open(json_user_file_path, 'r') as f:
             data = json.load(f)
             current_user_id = data.get('id', None)
+            self.user_id = current_user_id
 
         if current_user_id is None:
             print("User ID not found in JSON file.")
@@ -431,7 +426,173 @@ class Client_services(MDScreen):
             booking_details = BookingDetails(manager=self.manager)  # Pass the manager
             booking_details.display_bookings(bookings)
             self.ids.activity.add_widget(booking_details)
+
     def profile_func(self):
         self.ids.profile.clear_widgets()  # Clear existing widgets first
         self.ids.profile.add_widget(Profile_screen(manager=self.manager))
 
+    def start_periodic_check(self, dt):
+        thread = threading.Thread(target=self.periodic_check, args=(3600,))
+        thread.daemon = True
+        thread.start()
+
+    def periodic_check(self, interval=3600):
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        json_user_file_path = os.path.join(script_dir, "user_data.json")
+
+        while True:
+            try:
+                with open(json_user_file_path, 'r') as f:
+                    data = json.load(f)
+                    user_id = data.get('id', None)
+                    email = data.get('email', None)
+
+                print('checking')
+                # Fetch bookings from the database
+                all_bookings = app_tables.oxi_book_slot.search()  # Fetch all bookings
+                bookings = [booking for booking in all_bookings if booking['oxi_id'] == user_id]
+                print(bookings)
+
+                # Process bookings on the main thread
+                Clock.schedule_once(lambda dt: self.process_bookings(bookings, email))
+
+            except Exception as e:
+                print(f"Error during periodic check: {e}")
+            # Wait for the specified interval before the next check
+            time.sleep(interval)
+
+    def process_bookings(self, bookings, email):
+        for booking in bookings:
+            service_type = booking['oxi_service_type']
+            book_date = booking['oxi_book_date']
+            time_slot = booking['oxi_book_time']
+            book_id = booking['oxi_book_id']
+            username = booking['oxi_username']
+            booking_date_str = book_date.strftime('%d %B %Y')
+
+            match = re.match(r'(\d{1,2}[ap]m)\s*-\s*(\d{1,2}[ap]m)', time_slot)
+            if match:
+                start_time_str = match.group(1)
+                end_time_str = match.group(2)
+                start_time = datetime.strptime(f"{book_date} {start_time_str}", "%Y-%m-%d %I%p")
+                end_time = datetime.strptime(f"{book_date} {end_time_str}", "%Y-%m-%d %I%p")
+            else:
+                print(f"Invalid time format for booking ID {book_id}: {time_slot}")
+                continue
+
+            current_datetime = datetime.now()
+
+            if current_datetime > end_time:
+                pdf_filename = f"reports/{username}_booking_{book_id}.pdf"
+                pdf_path = os.path.join(pdf_filename)
+
+                if not os.path.exists(pdf_path):
+                    self.create_booking_pdf(pdf_path, service_type, username, booking_date_str, time_slot)
+                    email_subject = "Oxivive Report Details"
+                    email_message = "Please find the attached PDF for your report details."
+                    self.send_email_with_attachment(email, email_subject, email_message, pdf_path)
+                else:
+                    print(f"PDF already exists: {pdf_path}")
+
+    def create_booking_pdf(self, pdf_path, service_type, username, book_date, time_slot):
+        try:
+            pdf = FPDF()
+            pdf.add_page()
+
+            pdf.set_fill_color(204, 0, 0)
+            pdf.rect(0, 0, 210, 40, 'F')
+            if platform == 'android':
+                pdf.image('file:///storage/emulated/0/Download/shot.png', 10, 8, 33)
+            else:
+                pdf.image('images/shot.png', 10, 8, 33)
+            pdf.set_font('Arial', 'B', 16)
+            pdf.set_text_color(255, 255, 255)
+            pdf.cell(80)
+            pdf.cell(30, 10, 'Oxivive', 0, 1, 'C')
+            pdf.set_font('Arial', 'I', 12)
+            pdf.cell(80)
+            pdf.cell(30, 10, 'REPORT', 0, 1, 'C')
+            pdf.ln(20)
+
+            pdf.set_text_color(0, 0, 0)
+
+            pdf.set_font('Arial', 'B', 12)
+            pdf.cell(0, 10, f'Name : {username}', 0, 1, 'L')
+            pdf.cell(0, 10, f'Date: {book_date}', 0, 1, 'L')
+            pdf.cell(0, 10, f'Service: {service_type}', 0, 1, 'L')
+            pdf.ln(10)
+
+            pdf.set_font('Arial', 'B', 12)
+            pdf.cell(0, 10, f'Report To: {username}', 0, 1, 'L')
+
+            # Table header
+            pdf.set_fill_color(204, 0, 0)
+            pdf.set_text_color(255, 255, 255)
+            pdf.set_font('Arial', 'B', 12)
+            pdf.cell(60, 10, 'DETAILS', 1, 0, 'C', 1)
+            pdf.cell(40, 10, 'SESSION DATE', 1, 0, 'C', 1)
+            pdf.cell(40, 10, 'SESSION TIME', 1, 0, 'C', 1)
+            pdf.cell(50, 10, 'DOCTOR', 1, 1, 'C', 1)
+
+            # Table row
+            pdf.set_fill_color(255, 204, 204)
+            pdf.set_text_color(0, 0, 0)
+            pdf.set_font('Arial', '', 12)
+            pdf.cell(60, 10, service_type, 1, 0, 'C', 1)
+            pdf.cell(40, 10, book_date, 1, 0, 'C', 1)
+            pdf.cell(40, 10, time_slot, 1, 0, 'C', 1)
+            pdf.cell(50, 10, 'Dr.Chinmaya', 1, 1, 'C', 1)
+
+            # sign
+            pdf.set_font('Arial', 'B', 12)
+            pdf.cell(0, 10, '', 0, 1)
+            pdf.set_fill_color(255, 255, 255)
+            pdf.set_text_color(0, 0, 0)  # Set text color to black for totals
+            pdf.cell(160, 10, 'Sign:', 0, 0, 'R')
+            pdf.cell(30, 10, f'Doctors sign', 0, 1, 'R', 1)
+
+            pdf.cell(0, 10, 'Design is under process..... ', 0, 1)
+
+            # Footer
+            footer_height = 30
+            pdf.set_y(-footer_height - 0)  # Adjust the y-coordinate to position the footer correctly
+            pdf.set_fill_color(255, 0, 0)
+            pdf.rect(0, pdf.get_y(), 210, footer_height, 'F')
+
+            # Calculate vertical position for the centered text within the footer
+            footer_y = pdf.get_y() + (footer_height / 2) - 15.5  # Adjust 5 based on the text size
+
+            pdf.set_y(footer_y)
+            pdf.set_text_color(255, 255, 255)
+            pdf.set_font('Arial', 'BI', 12)
+            pdf.cell(0, 10, 'Thank you for choosing Oxivive. ***WelCome***', 0, 0, 'C')
+
+            pdf.output(pdf_path)
+            print(f"PDF created successfully: {pdf_path}")
+        except Exception as e:
+            print(f"Error creating PDF: {e}")
+
+    def send_email_with_attachment(self, email, subject, message, attachment_path):
+        try:
+            from_mail = "oxivive@gmail.com"
+            server = smtplib.SMTP('smtp.gmail.com', 587)
+            server.starttls()
+            server.login(from_mail, "bqrt soih plhy dnix")
+
+            msg = EmailMessage()
+            msg['Subject'] = subject
+            msg['From'] = from_mail
+            msg['To'] = email
+            msg.set_content(message)
+
+            # Read the PDF file and attach it
+            with open(attachment_path, 'rb') as f:
+                file_data = f.read()
+                file_name = os.path.basename(attachment_path)
+                msg.add_attachment(file_data, maintype='application', subtype='octet-stream', filename=file_name)
+
+            server.send_message(msg)
+            server.quit()
+            print(f"Email sent successfully to {email}")
+        except Exception as e:
+            print(f"Failed to send email: {e}")
