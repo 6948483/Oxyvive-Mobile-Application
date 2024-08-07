@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 from anvil import BlobMedia
 from anvil.tables import app_tables
+from kivy.core.window import Window
 from kivy.metrics import dp
 from kivy.properties import ObjectProperty, ListProperty, StringProperty
 from kivy.uix.label import Label
@@ -45,7 +46,13 @@ class Profile(Screen):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        print("Profile screen initialized.")
+        Window.bind(on_keyboard=self.on_keyboard)
+    def on_keyboard(self, instance, key, scancode, codepoint, modifier):
+        if key == 27:  # Keycode for the back button on Android
+            self.go_back()
+            return True
+        return False
+
 
     def go_back(self):
         self.manager.current = 'client_services'
