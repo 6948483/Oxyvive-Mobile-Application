@@ -6,11 +6,11 @@ from anvil.tables import app_tables
 from kivy import platform
 from kivy.clock import Clock
 from kivy.core.window import Window
+from kivy.metrics import dp
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
-#from kivy.utils import dp
 from kivymd.app import MDApp
 from kivymd.uix.dialog import MDDialog
 from kivymd.uix.screen import MDScreen
@@ -27,7 +27,6 @@ import smtplib
 
 from io import BytesIO
 from kivy.core.window import Window
-from kivy.metrics import dp
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.button import Button
 from kivymd.uix.screen import MDScreen
@@ -217,6 +216,8 @@ class ForgotPassword(MDScreen):
                 user_anvil = app_tables.oxi_users.get(oxi_email=user_input)
                 if user_anvil:
                     self.send_email_otp(user_input)
+                else:
+                    self.ids.phone_email.helper_text = "Please enter the registered email"
             else:
                 try:
                     user_input = int(user_input)
@@ -280,3 +281,6 @@ class ForgotPassword(MDScreen):
     def handle_otp_verification_error(self, e):
         self.show_validation_dialog("Error Occurred")
         print(e)
+
+    def helper(self):
+        self.ids.phone_email.helper_text = ""

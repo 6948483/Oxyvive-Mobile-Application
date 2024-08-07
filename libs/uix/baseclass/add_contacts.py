@@ -2,11 +2,32 @@ import json
 import os
 
 from anvil.tables import app_tables
+from kivy.core.window import Window
 from kivymd.uix.button import MDFlatButton
 from kivymd.uix.screen import MDScreen
 
 
 class AddContact(MDScreen):
+    def __init__(self):
+        super().__init__()
+        Window.bind(on_keyboard=self.on_keyboard)
+
+    def on_keyboard(self, instance, key, scancode, codepoint, modifier):
+        if key == 27:  # Keycode for the back button on Android
+            self.go_back()
+            return True
+        return False
+
+        # def back_btn(self):
+        #     print("Back button pressed")
+        #     if self.manager:
+        #         screen = self.manager.get_screen('client_services')
+        #         screen.ids.bottom_nav.switch_tab('home screen')
+        #     else:
+        #         print("Manager is not set.")
+
+
+
     def phone_input_filter(self, string, from_undo):
         allowed_chars = '+0123456789'
         filtered_string = ''.join([ch for ch in string if ch in allowed_chars])

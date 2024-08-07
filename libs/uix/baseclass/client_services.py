@@ -2,11 +2,6 @@ import base64
 import io
 import json
 import os
-import re
-import threading
-import time
-from datetime import datetime
-
 from anvil.tables import app_tables
 from kivy.clock import Clock
 from kivy.core.window import Window
@@ -24,14 +19,7 @@ from kivymd.uix.label import MDLabel
 from kivymd.uix.relativelayout import MDRelativeLayout
 from kivymd.uix.screen import MDScreen
 from kivymd.uix.toolbar import MDTopAppBar
-from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter
-from reportlab.lib.styles import getSampleStyleSheet
-from reportlab.lib.units import inch
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image as ReportLabImage
 from server import Server
-import smtplib
-from email.message import EmailMessage
 
 
 class Activity(MDBoxLayout):
@@ -47,11 +35,11 @@ class Activity(MDBoxLayout):
 
     def on_keyboard(self, instance, key, scancode, codepoint, modifier):
         if key == 27:  # Keycode for the back button on Android
-            self.back_btn()
+            self.back_button()
             return True
         return False
 
-    def back_btn(self):
+    def back_button(self):
         print("Back button pressed")
         if self.manager:
             screen = self.manager.get_screen('client_services')
@@ -70,7 +58,7 @@ class BookingDetails(Screen):
             raise ValueError("Manager must be provided")
 
         toolbar = MDTopAppBar(
-            title="My Bookings       ",
+            title="My Bookings",
             elevation=0,
             pos_hint={'top': 1}
         )
@@ -190,6 +178,22 @@ class Profile_screen(Screen):
 
     def __init__(self, **kwargs):
         super(Profile_screen, self).__init__(**kwargs)
+        Window.bind(
+            on_keyboard=self.on_keyboard)
+
+    def on_keyboard(self, instance, key, scancode, codepoint, modifier):
+        if key == 27:  # Keycode for the back button on Android
+            self.back_btn()
+            return True
+        return False
+
+    def back_btn(self):
+        print("Back button pressed")
+        if self.manager:
+            screen = self.manager.get_screen('client_services')
+            screen.ids.bottom_nav.switch_tab('home screen')
+        else:
+            print("Manager is not set.")
 
     def on_card_release(self, card):
         card_id = card.id
@@ -205,7 +209,8 @@ class Profile_screen(Screen):
         elif card_id == 'logout_box':
             self.on_touch_down_log_out()
 
-    def on_kv_post(self, base_widget):
+
+    def on_kv_post(self,base_widget):
         print("kv post is not working")
         self.server = Server()
         print("IDs dictionary:", self.ids)  # Debugging line
@@ -340,10 +345,9 @@ class Client_services(MDScreen):
         super(Client_services, self).__init__(**kwargs)
 
         self.server = Server()
-        # self.change()
 
-        # Start periodic check later to ensure UI is ready
-        Clock.schedule_once(self.start_periodic_check)
+
+        # self.change()
 
     def change(self):
         script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -406,7 +410,6 @@ class Client_services(MDScreen):
         with open(json_user_file_path, 'r') as f:
             data = json.load(f)
             current_user_id = data.get('id', None)
-            self.user_id = current_user_id
 
         if current_user_id is None:
             print("User ID not found in JSON file.")
@@ -428,150 +431,7 @@ class Client_services(MDScreen):
             booking_details = BookingDetails(manager=self.manager)  # Pass the manager
             booking_details.display_bookings(bookings)
             self.ids.activity.add_widget(booking_details)
-
     def profile_func(self):
         self.ids.profile.clear_widgets()  # Clear existing widgets first
         self.ids.profile.add_widget(Profile_screen(manager=self.manager))
 
-    def start_periodic_check(self, dt):
-        thread = threading.Thread(target=self.periodic_check, args=(3600,))
-        thread.daemon = True
-        thread.start()
-
-    def periodic_check(self, interval=3600):
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        json_user_file_path = os.path.join(script_dir, "user_data.json")
-
-        while True:
-            try:
-                with open(json_user_file_path, 'r') as f:
-                    data = json.load(f)
-                    user_id = data.get('id', None)
-                    email = data.get('email', None)
-
-                print('checking')
-                # Fetch bookings from the database
-                all_bookings = app_tables.oxi_book_slot.search()  # Fetch all bookings
-                bookings = [booking for booking in all_bookings if booking['oxi_id'] == user_id]
-                print(bookings)
-
-                # Process bookings on the main thread
-                Clock.schedule_once(lambda dt: self.process_bookings(bookings, email))
-
-            except Exception as e:
-                print(f"Error during periodic check: {e}")
-            # Wait for the specified interval before the next check
-            time.sleep(interval)
-
-    def process_bookings(self, bookings, email):
-        for booking in bookings:
-            print(booking)
-            service_type = booking['oxi_service_type']
-            book_date = booking['oxi_book_date']
-            time_slot = booking['oxi_book_time']
-            book_id = booking['oxi_book_id']
-            username = booking['oxi_username']
-            booking_date_str = book_date.strftime('%d %B %Y')
-
-            # Extract the start and end times from the time_slot string
-            match = re.match(r'(\d{1,2}[ap]m)\s*-\s*(\d{1,2}[ap]m)', time_slot)  # Match the time range
-            if match:
-                start_time_str = match.group(1)  # e.g., '1pm'
-                end_time_str = match.group(2)  # e.g., '3pm'
-                # Create datetime objects for both start and end times
-                start_time = datetime.strptime(f"{book_date} {start_time_str}",
-                                               "%Y-%m-%d %I%p")  # Use %I for 12-hour format
-                end_time = datetime.strptime(f"{book_date} {end_time_str}", "%Y-%m-%d %I%p")
-            else:
-                print(f"Invalid time format for booking ID {book_id}: {time_slot}")
-                continue  # Skip this booking if the format is invalid
-
-            # Check if the current time is after the booking time slot
-            current_datetime = datetime.now()
-
-            if current_datetime > end_time:
-                # Generate PDF after booking time duration is completed
-                pdf_filename = f"{username}_booking_{book_id}.pdf"
-                pdf_path = os.path.join(pdf_filename)
-
-                if not os.path.exists(pdf_path):
-                    self.create_booking_pdf(pdf_path, service_type, username, booking_date_str, time_slot)
-                    print(f"PDF generated: {pdf_path}")
-
-                    # Send the email with the attached PDF
-                    email = email  # Replace with the recipient's email
-                    subject = "Oxivive Report Details"
-                    message = "Please find the attached PDF for your report details."
-                    self.send_email_with_attachment(email, subject, message, pdf_path)
-
-                else:
-                    print(f"PDF already exists: {pdf_path}")
-
-    def create_booking_pdf(self, file_path, service_type, username, book_date, time_slot):
-        document = SimpleDocTemplate(file_path, pagesize=letter)
-        styles = getSampleStyleSheet()
-
-        # Title
-        title = Paragraph("Oxive Booking Details", styles['Title'])
-
-        # Booking details
-        service_type_paragraph = Paragraph(f"<b>Service Type:</b> {service_type}", styles['Normal'])
-        username_paragraph = Paragraph(f"<b>User Name:</b> {username}", styles['Normal'])
-        book_date_paragraph = Paragraph(f"<b>Date:</b> {book_date}", styles['Normal'])
-        time_slot_paragraph = Paragraph(f"<b>Time:</b> {time_slot}", styles['Normal'])
-
-        # Spacer
-        spacer = Spacer(1, 12)
-
-        # Image (Ensure you have a valid image path)
-
-        logo = ReportLabImage("images/shot.png", 2 * inch, 2 * inch)
-
-        # Table with proper styling
-        data = [
-            [logo],
-            [service_type_paragraph],
-            [username_paragraph],
-            [book_date_paragraph],
-            [time_slot_paragraph]
-        ]
-
-        table = Table(data, colWidths=[450])
-        table.setStyle(TableStyle([
-            ('BACKGROUND', (0, 0), (-1, 0), colors.grey),
-            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
-            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
-            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
-            ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
-            ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
-            ('GRID', (0, 0), (-1, -1), 1, colors.black),
-        ]))
-
-        # Build PDF
-        elements = [title, spacer, table]
-        document.build(elements)
-
-    def send_email_with_attachment(self, email, subject, message, attachment_path):
-        try:
-            from_mail = "oxivive@gmail.com"
-            server = smtplib.SMTP('smtp.gmail.com', 587)
-            server.starttls()
-            server.login(from_mail, "bqrt soih plhy dnix")
-
-            msg = EmailMessage()
-            msg['Subject'] = subject
-            msg['From'] = from_mail
-            msg['To'] = email
-            msg.set_content(message)
-
-            # Read the PDF file and attach it
-            with open(attachment_path, 'rb') as f:
-                file_data = f.read()
-                file_name = os.path.basename(attachment_path)
-                msg.add_attachment(file_data, maintype='application', subtype='octet-stream', filename=file_name)
-
-            server.send_message(msg)
-            server.quit()
-            print(f"Email sent successfully to {email}")
-        except Exception as e:
-            print(f"Failed to send email: {e}")

@@ -123,6 +123,8 @@ class Login(MDScreen):
                     )
                     self.ids.login_email.text = ''
                     self.ids.login_password.text = ''
+                    self.ids.login_email.helper_text = ""
+                    self.ids.login_password.helper_text = ""
 
             elif user_type == 'service provider':
                 if password_value:
