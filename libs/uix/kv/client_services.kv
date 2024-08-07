@@ -127,8 +127,8 @@
                 pos_hint: {'center_x': 0.5}
 
                 MDCard:
-                    size_hint: None, None
-                    size: "378dp", "120dp"
+                    size_hint_y: None
+                    height:"120dp"
                     elevation: 3
                     radius: [20]
                     padding: dp(20)
@@ -170,8 +170,8 @@
                                 valign: "middle"
 
                 MDCard:
-                    size_hint: None, None
-                    size: "378dp", self.minimum_height  # Adjust width as needed
+                    size_hint_y:None
+                    height:self.minimum_height  # Adjust width as needed
                     elevation: 3
                     radius: [20]
                     orientation: 'vertical'
@@ -191,8 +191,8 @@
                         height: dp(1)
 
                     MDCard:
-                        size_hint: None, None
-                        size: "365dp", "50dp"
+                        size_hint_y: None
+                        height:"50dp"
                         radius: [10]
                         on_release: root.on_touch_down_profile()
 
@@ -219,8 +219,8 @@
                         height: dp(1)
 
                     MDCard:
-                        size_hint: None, None
-                        size: "365dp", "50dp"
+                        size_hint_y: None
+                        height:"50dp"
                         radius: [10]
                         on_release: root.on_touch_down_notifications()
 
@@ -246,8 +246,8 @@
                         height: dp(1)
 
                     MDCard:
-                        size_hint: None, None
-                        size: "365dp", "50dp"
+                        size_hint_y: None
+                        height:"50dp"
                         radius: [10]
                         on_release: root.on_touch_down_reports()
 
@@ -273,8 +273,8 @@
                         height: dp(1)
 
                     MDCard:
-                        size_hint: None, None
-                        size: "365dp", "50dp"
+                        size_hint_y: None
+                        height:"50dp"
                         radius: [10]
                         on_release: root.on_touch_down_support()
 
@@ -299,8 +299,8 @@
                         height: dp(1)
 
                     MDCard:
-                        size_hint: None, None
-                        size: "365dp", "50dp"
+                        size_hint_y: None
+                        height:"50dp"
                         radius: [10]
                         on_release: root.on_touch_down_settings()
 
@@ -325,8 +325,8 @@
                         height: dp(1)
 
                     MDCard:
-                        size_hint: None, None
-                        size: "365dp", "50dp"
+                        size_hint_y: None
+                        height:"50dp"
                         radius: [10]
                         on_release: root.on_touch_down_log_out()
 
