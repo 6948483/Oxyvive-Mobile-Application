@@ -1,5 +1,6 @@
 import os
 
+from kivy.core.window import Window
 from kivy.utils import platform
 from kivymd.uix.list import OneLineListItem, TwoLineIconListItem, OneLineAvatarListItem, OneLineIconListItem
 from kivymd.uix.screen import MDScreen
@@ -53,6 +54,24 @@ class ItemConfirm(OneLineAvatarListItem):
 class ChooseContact(MDScreen):
     all_contacts = []
     dialog_contacts = []  # List to keep track of contacts currently in the dialog
+    def __init__(self):
+        super().__init__()
+        Window.bind(on_keyboard=self.on_keyboard)
+
+    def on_keyboard(self, instance, key, scancode, codepoint, modifier):
+        if key == 27:  # Keycode for the back button on Android
+            self.on_back_button()
+            return True
+        return False
+
+        # def back_btn(self):
+        #     print("Back button pressed")
+        #     if self.manager:
+        #         screen = self.manager.get_screen('client_services')
+        #         screen.ids.bottom_nav.switch_tab('home screen')
+        #     else:
+        #         print("Manager is not set.")
+
 
     def on_back_button(self):
         self.manager.push_replacement("client_location")  # Replace 'previous_screen' with the actual screen name
