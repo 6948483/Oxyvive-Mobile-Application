@@ -43,7 +43,7 @@ class Signup(MDScreen):
         self.ids.signup_password.text = ""
         self.ids.signup_phone.text = ""
         self.ids.signup_pincode.text = ""
-        self.ids.signup_pan_card_no.text = ""
+        self.ids.signup_oxi_pan.text = ""
         self.ids.profile_name.text = ""
 
         self.manager.push_replacement("main_sc", "right")
@@ -118,7 +118,7 @@ class Signup(MDScreen):
         password = self.ids.signup_password.text
         phone = self.ids.signup_phone.text
         pincode = self.ids.signup_pincode.text
-        pan_card_no = self.ids.signup_pan_card_no.text
+        oxi_pan = self.ids.signup_oxi_pan.text
         profile = self.ids.profile_name.text
 
         hash_pashword = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
@@ -135,7 +135,7 @@ class Signup(MDScreen):
         self.ids.signup_password.helper_text = ""
         self.ids.signup_phone.helper_text = ""
         self.ids.signup_pincode.helper_text = ""
-        self.ids.signup_pan_card_no.helper_text = ""
+        self.ids.signup_oxi_pan.helper_text = ""
         if not name:
             self.ids.signup_name.error = True
             self.ids.signup_name.helper_text = "Enter Name"
@@ -152,7 +152,7 @@ class Signup(MDScreen):
         elif not pincode or len(pincode) != 6:
             self.ids.signup_pincode.error = True
             self.ids.signup_pincode.helper_text = "Invalid Pincode (6 digits required)"
-        elif not pan_card_no or len(pan_card_no) != 10:
+        elif not oxi_pan or len(oxi_pan) != 10:
             self.ids.signup_pan_card_no.error = True
             self.ids.signup_pan_card_no.helper_text = "Invalid Pan Card Number (10 digits required)"
         elif profile == 'None':
@@ -170,8 +170,8 @@ class Signup(MDScreen):
             self.ids.signup_phone.helper_text = ""
             self.ids.signup_pincode.error = False
             self.ids.signup_pincode.helper_text = ""
-            self.ids.signup_pan_card_no.error = False
-            self.ids.signup_pan_card_no.helper_text = ""
+            self.ids.signup_oxi_pan.error = False
+            self.ids.signup_oxi_pan.helper_text = ""
 
             try:
                 if self.server.is_connected():
@@ -179,14 +179,14 @@ class Signup(MDScreen):
                     # Check if email and phone already exist in the database
                     existing_email = app_tables.oxi_users.get(oxi_email=email)
                     existing_phone = app_tables.oxi_users.get(oxi_phone=float(phone))
-                    existing_pan_card_no = app_tables.oxi_users.get(oxi_pan_card_no=pan_card_no)
+                    existing_pan_card_no = app_tables.oxi_users.get(oxi_pan=oxi_pan)
 
                     if existing_email:
                         self.ids.signup_email.helper_text = "Email already registered"
                     elif existing_phone:
                         self.ids.signup_phone.helper_text = "Phone number already registered"
                     elif existing_pan_card_no:
-                        self.ids.signup_pan_card_no.helper_text = "Pan Card number already registered"
+                        self.ids.signup_oxi_pan.helper_text = "Pan Card number already registered"
                     else:
                         id = self.generate_random_code()
                         app_tables.oxi_users.add_row(
@@ -196,7 +196,7 @@ class Signup(MDScreen):
                             oxi_password=hash_pashword,
                             oxi_phone=float(phone),
                             oxi_pincode=int(pincode),
-                            oxi_pan_card_no=str(pan_card_no),
+                            oxi_pan=str(oxi_pan),
                             oxi_usertype='client',
                             oxi_profile=self.profile)
 
@@ -205,7 +205,7 @@ class Signup(MDScreen):
                         self.ids.signup_password.text = ""
                         self.ids.signup_phone.text = ""
                         self.ids.signup_pincode.text = ""
-                        self.ids.signup_pan_card_no.text = ""
+                        self.ids.signup_oxi_pan.text = ""
                         self.ids.profile_name.text = ""
 
                         # Navigate to the success screen
@@ -289,5 +289,5 @@ class Signup(MDScreen):
     def helper(self):
         self.ids.signup_email.helper_text = ""
         self.ids.signup_phone.helper_text = ""
-        self.ids.signup_pan_card_no.helper_text = ""
+        self.ids.signup_oxi_pan.helper_text = ""
 
