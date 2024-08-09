@@ -44,19 +44,29 @@ class Notification(MDScreen):
             self.user_id = user_info['id']
         self.load_notifications()
 
-    def save_notification(self, title, message):
-        """Save a new notification to the Anvil database."""
-        app_tables.oxi_notifications.add_row(oxi_id=self.user_id, oxi_notification_title=title,
-                                             oxi_notification=message)
+    def save_notification(self, title, message, timestamp):
+        """Save a new notification to the Anvil database with a timestamp."""
+        # timestamp = datetime.now().isoformat()  # Get the current timestamp
+        app_tables.oxi_notifications.add_row(
+            oxi_id=self.user_id,
+            oxi_notification_title=title,
+            oxi_notification=message,
+            oxi_timestamp=timestamp  # Store the timestamp
+        )
 
     def load_notifications(self):
-        """Load notifications from the Anvil database."""
+        """Load notifications from the Anvil database, including timestamps."""
         notifications = app_tables.oxi_notifications.search(oxi_id=self.user_id)
         notifications_list = list(notifications)
+
         if not notifications_list:
             self.show_no_notifications_message()
         else:
-            self.notifications = [notif['oxi_notification'] for notif in notifications]
+            # Store notifications as a list of dictionaries with message and timestamp
+            self.notifications = [
+                {'message': notif['oxi_notification'], 'timestamp': notif['oxi_timestamp']}
+                for notif in notifications_list
+            ]
             self.update_notification_list()
 
     def show_no_notifications_message(self):
@@ -89,18 +99,27 @@ class Notification(MDScreen):
         self.manager.current = 'client_services'  # Changed from push_replacement
 
     def show_notification(self, title, message):
-        self.notifications.append(message)
-        self.save_notification(title, message)
+        timestamp = datetime.now().isoformat()  # Get the current timestamp as a datetime object
+        notification = {
+            'message': message,
+            'timestamp': timestamp
+        }
+        self.notifications.append(notification)
+        self.save_notification(title, message, timestamp)
         self.update_notification_list()
         self.push_device_notification(title, message)
 
     def update_notification_list(self):
         notification_list = self.ids.notification_list
         notification_list.clear_widgets()
-        for notification in self.notifications:
+
+        # Sort notifications by timestamp in descending order
+        sorted_notifications = sorted(self.notifications, key=lambda notif: notif['timestamp'], reverse=True)
+
+        for notification in sorted_notifications:
             card = MDCard(orientation='vertical', size_hint_y=None, height="130dp", padding='20dp',
                           pos_hint={'center_x': 0.5, 'center_y': 0.5}, elevation=2)
-            card.add_widget(MDLabel(text=notification, halign="center"))
+            card.add_widget(MDLabel(text=notification['message'], halign="center"))
             card.add_widget(MDRaisedButton(text="Mark as Read", on_release=self.mark_as_read))
             notification_list.add_widget(card)
 

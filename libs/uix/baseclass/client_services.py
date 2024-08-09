@@ -9,6 +9,7 @@ import time
 from datetime import datetime
 from email.message import EmailMessage
 
+from anvil import media
 from anvil.tables import app_tables
 from fpdf import FPDF
 from kivy.clock import Clock
@@ -44,11 +45,11 @@ class Activity(MDBoxLayout):
 
     def on_keyboard(self, instance, key, scancode, codepoint, modifier):
         if key == 27:  # Keycode for the back button on Android
-            self.back_btn()
+            self.back_button()
             return True
         return False
 
-    def back_btn(self):
+    def back_button(self):
         print("Back button pressed")
         if self.manager:
             screen = self.manager.get_screen('client_services')
@@ -67,7 +68,7 @@ class BookingDetails(Screen):
             raise ValueError("Manager must be provided")
 
         toolbar = MDTopAppBar(
-            title="My Bookings       ",
+            title="My Bookings",
             elevation=0,
             pos_hint={'top': 1}
         )
@@ -187,6 +188,22 @@ class Profile_screen(Screen):
 
     def __init__(self, **kwargs):
         super(Profile_screen, self).__init__(**kwargs)
+        Window.bind(
+            on_keyboard=self.on_keyboard)
+
+    def on_keyboard(self, instance, key, scancode, codepoint, modifier):
+        if key == 27:  # Keycode for the back button on Android
+            self.back_btn()
+            return True
+        return False
+
+    def back_btn(self):
+        print("Back button pressed")
+        if self.manager:
+            screen = self.manager.get_screen('client_services')
+            screen.ids.bottom_nav.switch_tab('home screen')
+        else:
+            print("Manager is not set.")
 
     def on_card_release(self, card):
         card_id = card.id
@@ -368,7 +385,7 @@ class Client_services(MDScreen):
 
     def on_pre_enter(self, *args):
         # Ensure the Profile_screen instance is accessed correctly
-        #, 'images/gym.png'
+        # , 'images/gym.png'
 
         images = ['images/1.png', 'images/2.png', 'images/3.png']
         for i in images:
@@ -404,7 +421,6 @@ class Client_services(MDScreen):
         with open(json_user_file_path, 'r') as f:
             data = json.load(f)
             current_user_id = data.get('id', None)
-            self.user_id = current_user_id
 
         if current_user_id is None:
             print("User ID not found in JSON file.")
@@ -432,11 +448,11 @@ class Client_services(MDScreen):
         self.ids.profile.add_widget(Profile_screen(manager=self.manager))
 
     def start_periodic_check(self, dt):
-        thread = threading.Thread(target=self.periodic_check, args=(3600,))
+        thread = threading.Thread(target=self.periodic_check, args=(3,))
         thread.daemon = True
         thread.start()
 
-    def periodic_check(self, interval=3600):
+    def periodic_check(self, interval=3):
         script_dir = os.path.dirname(os.path.abspath(__file__))
         json_user_file_path = os.path.join(script_dir, "user_data.json")
 
@@ -463,38 +479,42 @@ class Client_services(MDScreen):
 
     def process_bookings(self, bookings, email):
         for booking in bookings:
-            service_type = booking['oxi_service_type']
-            book_date = booking['oxi_book_date']
-            time_slot = booking['oxi_book_time']
-            book_id = booking['oxi_book_id']
-            username = booking['oxi_username']
-            booking_date_str = book_date.strftime('%d %B %Y')
+            if booking['oxi_reports'] is None:
+                service_type = booking['oxi_service_type']
+                book_date = booking['oxi_book_date']
+                time_slot = booking['oxi_book_time']
+                book_id = booking['oxi_book_id']
+                username = booking['oxi_username']
+                booking_date_str = book_date.strftime('%d %B %Y')
 
-            match = re.match(r'(\d{1,2}[ap]m)\s*-\s*(\d{1,2}[ap]m)', time_slot)
-            if match:
-                start_time_str = match.group(1)
-                end_time_str = match.group(2)
-                start_time = datetime.strptime(f"{book_date} {start_time_str}", "%Y-%m-%d %I%p")
-                end_time = datetime.strptime(f"{book_date} {end_time_str}", "%Y-%m-%d %I%p")
-            else:
-                print(f"Invalid time format for booking ID {book_id}: {time_slot}")
-                continue
-
-            current_datetime = datetime.now()
-
-            if current_datetime > end_time:
-                pdf_filename = f"reports/{username}_booking_{book_id}.pdf"
-                pdf_path = os.path.join(pdf_filename)
-
-                if not os.path.exists(pdf_path):
-                    self.create_booking_pdf(pdf_path, service_type, username, booking_date_str, time_slot)
-                    email_subject = "Oxivive Report Details"
-                    email_message = "Please find the attached PDF for your report details."
-                    self.send_email_with_attachment(email, email_subject, email_message, pdf_path)
+                match = re.match(r'(\d{1,2}[ap]m)\s*-\s*(\d{1,2}[ap]m)', time_slot)
+                if match:
+                    start_time_str = match.group(1)
+                    end_time_str = match.group(2)
+                    start_time = datetime.strptime(f"{book_date} {start_time_str}", "%Y-%m-%d %I%p")
+                    end_time = datetime.strptime(f"{book_date} {end_time_str}", "%Y-%m-%d %I%p")
                 else:
-                    print(f"PDF already exists: {pdf_path}")
+                    print(f"Invalid time format for booking ID {book_id}: {time_slot}")
+                    continue
 
-    def create_booking_pdf(self, pdf_path, service_type, username, book_date, time_slot):
+                current_datetime = datetime.now()
+
+                if current_datetime > end_time:
+
+                    pdf_path = self.create_booking_pdf(service_type, username, booking_date_str, time_slot)
+                    if pdf_path:
+                        pdf_media = media.from_file(pdf_path, name=f'{username}_{time_slot}_report.pdf')
+                        print(booking['oxi_book_id'])
+                        booked_row = app_tables.oxi_book_slot.get(oxi_book_id=booking['oxi_book_id'])
+                        if booked_row:
+                            booked_row['oxi_reports'] = pdf_media
+                            email_subject = "Oxivive Report Details"
+                            email_message = "Please find the attached PDF for your report details."
+                            self.send_email_with_attachment(email, email_subject, email_message, pdf_path)
+                    else:
+                        print(f"PDF already exists: {pdf_path}")
+
+    def create_booking_pdf(self, service_type, username, book_date, time_slot):
         try:
             pdf = FPDF()
             pdf.add_page()
@@ -567,10 +587,13 @@ class Client_services(MDScreen):
             pdf.set_font('Arial', 'BI', 12)
             pdf.cell(0, 10, 'Thank you for choosing Oxivive. ***WelCome***', 0, 0, 'C')
 
-            pdf.output(pdf_path)
-            print(f"PDF created successfully: {pdf_path}")
         except Exception as e:
             print(f"Error creating PDF: {e}")
+            return None
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        pdf_path = os.path.join(script_dir, "oxivive_report.pdf")
+        pdf.output(pdf_path)
+        return pdf_path
 
     def send_email_with_attachment(self, email, subject, message, attachment_path):
         try:
