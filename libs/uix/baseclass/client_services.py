@@ -68,7 +68,7 @@ class BookingDetails(MDScreen):
             raise ValueError("Manager must be provided")
 
         toolbar = MDTopAppBar(
-            title="My Bookings",
+            title="My Bookings    ",
             elevation=0,
             pos_hint={'top': 1}
         )
@@ -80,7 +80,7 @@ class BookingDetails(MDScreen):
         main_layout = MDBoxLayout(
             orientation='vertical',
             padding=(20, 0, 20, 0),
-            spacing=0,
+            spacing=5,
             size_hint_y=None
         )
         main_layout.bind(minimum_height=main_layout.setter('height'))
@@ -98,8 +98,8 @@ class BookingDetails(MDScreen):
         # Layout for upcoming bookings
         self.upcoming_layout = MDBoxLayout(
             orientation='vertical',
-            padding=(0, 5, 0, 0),
-            spacing=10,
+            padding=(10, 15, 10, 15),
+            spacing=25,
             size_hint_y=None
         )
         self.upcoming_layout.bind(minimum_height=self.upcoming_layout.setter('height'))
@@ -118,7 +118,7 @@ class BookingDetails(MDScreen):
         # Layout for past bookings
         self.past_layout = MDBoxLayout(
             orientation='vertical',
-            padding=(0, 5, 0, 0),
+            padding=(10, 15, 10, 15),
             spacing=10,
             size_hint_y=None
         )
@@ -224,10 +224,10 @@ class BookingDetails(MDScreen):
             booking_card = MDCard(
                 orientation='vertical',
                 size_hint=(1, None),
-                height='300dp',  # Adjusted height to accommodate image and details
+                height='250dp',  # Height to fit image and text
                 elevation=2,
-                padding=0,
-                spacing=0,
+                padding=[15, 15, 15, 0],
+                spacing=5,
                 md_bg_color=get_color_from_hex("#FFFFFF"),
                 radius=[15, 15, 15, 15],
                 on_release=lambda x, service_type=service_type, book_date=str(book_date), time_slot=time_slot,
@@ -235,13 +235,18 @@ class BookingDetails(MDScreen):
                 self.view_booking_details(service_type, book_date, date_time_str, time_slot, service_id, book_id)
             )
 
-            # Image aligned with the location image from the reference
-            image_widget = KivyImage(source=image_source, size_hint=(None, None), size=("300dp", "200dp"),
-                                     pos_hint={"center_x": 0.5, "center_y": 0.5})
+            # Image aligned with the location image from the reference, fitting card width with aspect ratio
+            image_widget = KivyImage(
+                source=image_source,
+                size_hint=(1, None),  # Set size hint for full width
+                height='180dp',  # Dynamically adjust the height for remaining space after text
+                keep_ratio=True,  # Maintain aspect ratio
+                allow_stretch=True,  # Allow stretching within height bound
+            )
             booking_card.add_widget(image_widget)
 
             # Details below the image
-            details_layout = MDBoxLayout(orientation='vertical', padding=(10, 0, 0, 0))
+            details_layout = MDBoxLayout(orientation='vertical', padding=(0, 0, 0, 0))
             details_layout.add_widget(MDLabel(text=f"{service_type}", theme_text_color="Custom",
                                               text_color=get_color_from_hex("#000000")))
             details_layout.add_widget(MDLabel(text=f"{date_time_str}", theme_text_color="Custom",
@@ -262,7 +267,7 @@ class BookingDetails(MDScreen):
         if not has_upcoming:
             no_upcoming_card = MDCard(
                 orientation='vertical',
-                padding=15,
+                padding=10,
                 size_hint=(1, None),
                 height='120dp',
                 radius=[15, 15, 15, 15],
@@ -270,7 +275,7 @@ class BookingDetails(MDScreen):
                 on_release=lambda x: self.manager.push_replacement('client_location')
             )
             no_upcoming_card.add_widget(MDLabel(
-                text="You have no upcoming trips",
+                text="You have no upcoming bookings",
                 theme_text_color="Primary",
                 font_style="Body1",
                 halign="left"
