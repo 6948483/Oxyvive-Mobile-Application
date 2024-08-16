@@ -79,7 +79,7 @@ class Notification(MDScreen):
         layout.add_widget(MDIcon(icon='bell-outline', size_hint=(None, None), size=('96dp', '96dp'),
                                  pos_hint={'center_x': 0.5, 'center_y': 0.6}))
         layout.add_widget(MDLabel(text='No notifications', halign='center', font_style='H5',
-                                  pos_hint={'center_x': 0.5, 'center_y': 0.4}))
+                                  pos_hint={'center_x': 0.5, 'center_y': 0.2}))
 
         notification_list.add_widget(layout)
 

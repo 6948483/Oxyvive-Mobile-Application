@@ -239,20 +239,35 @@ class BookingDetails(MDScreen):
             image_widget = KivyImage(
                 source=image_source,
                 size_hint=(1, None),  # Set size hint for full width
-                height='180dp',  # Dynamically adjust the height for remaining space after text
+                height='177dp',  # Dynamically adjust the height for remaining space after text
                 keep_ratio=True,  # Maintain aspect ratio
                 allow_stretch=True,  # Allow stretching within height bound
             )
             booking_card.add_widget(image_widget)
 
             # Details below the image
-            details_layout = MDBoxLayout(orientation='vertical', padding=(0, 0, 0, 0))
-            details_layout.add_widget(MDLabel(text=f"{service_type}", theme_text_color="Custom",
-                                              text_color=get_color_from_hex("#000000")))
-            details_layout.add_widget(MDLabel(text=f"{date_time_str}", theme_text_color="Custom",
-                                              text_color=get_color_from_hex("#000000")))
-            details_layout.add_widget(MDLabel(text=f"₹ {self.fees}", theme_text_color="Custom",
-                                              text_color=get_color_from_hex("#000000")))
+            details_layout = MDBoxLayout(orientation='vertical', padding=(5, 0, 0, 0))
+
+            # Service type
+            details_layout.add_widget(MDLabel(text=f"{service_type}",
+                                              theme_text_color="Custom",
+                                              text_color=get_color_from_hex("3A3E41"),  # Grey color
+                                              font_style="H6",  # Adjust font style (or remove if using font_size)
+                                              font_size="16sp"))  # Adjust font size
+
+            # Date and Time
+            details_layout.add_widget(MDLabel(text=f"{date_time_str}",
+                                              theme_text_color="Custom",
+                                              text_color=get_color_from_hex("3A3E41"),  # Grey color
+                                              font_style="Body1",  # Adjust font style
+                                              font_size="14sp"))  # Adjust font size
+
+            # Fees
+            details_layout.add_widget(MDLabel(text=f"₹ {self.fees}",
+                                              theme_text_color="Custom",
+                                              text_color=get_color_from_hex("3A3E41"),  # Grey color
+                                              font_style="Body1",  # Adjust font style
+                                              font_size="14sp"))  # Adjust font size
 
             booking_card.add_widget(details_layout)
 
