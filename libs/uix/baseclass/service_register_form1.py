@@ -1,9 +1,7 @@
 import json
 import re
 import random
-import sqlite3
 import string
-
 import bcrypt
 from kivy import platform
 from kivy.core.window import Window
@@ -12,60 +10,59 @@ from kivymd.uix.dialog import MDDialog
 from kivymd.uix.screen import MDScreen
 from kivy.properties import BooleanProperty
 from kivy.clock import Clock
-
 from server import Server
 from anvil.tables import app_tables
 
-conn = sqlite3.connect("users.db")
-cursor = conn.cursor()
-
-# Creating the oxiclinic table
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS oxiclinic (
-        Oxiclinics_Name TEXT,
-        established_year TEXT,
-        District TEXT,
-        State TEXT,
-        pincode TEXT,
-        address TEXT,
-        capsules INTEGER,
-        doc1 BLOB,
-        doc2 BLOB
-    )
-''')
-
-# Creating the oxiwheel table
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS oxiwheel (
-        Oxiwheels_Name TEXT ,
-        model_year TEXT,
-        District TEXT,
-        State TEXT,
-        pincode TEXT,
-        address TEXT,
-        capsules INTEGER,
-        doc1 BLOB,
-        doc2 BLOB
-    )
-''')
-
-# Creating the oxigym table
-cursor.execute('''
-    CREATE TABLE IF NOT EXISTS oxigym (
-        Oxigyms_Name TEXT,
-        established_year TEXT,
-        District TEXT,
-        State TEXT,
-        pincode TEXT,
-        address TEXT,
-        capsules INTEGER,
-        doc1 BLOB,
-        doc2 BLOB
-    )
-''')
-conn.commit()
-conn.close()
-
+# conn = sqlite3.connect("users.db")
+# cursor = conn.cursor()
+#
+# # Creating the oxiclinic table
+# cursor.execute('''
+#     CREATE TABLE IF NOT EXISTS oxiclinic (
+#         Oxiclinics_Name TEXT,
+#         established_year TEXT,
+#         District TEXT,
+#         State TEXT,
+#         pincode TEXT,
+#         address TEXT,
+#         capsules INTEGER,
+#         doc1 BLOB,
+#         doc2 BLOB
+#     )
+# ''')
+#
+# # Creating the oxiwheel table
+# cursor.execute('''
+#     CREATE TABLE IF NOT EXISTS oxiwheel (
+#         Oxiwheels_Name TEXT ,
+#         model_year TEXT,
+#         District TEXT,
+#         State TEXT,
+#         pincode TEXT,
+#         address TEXT,
+#         capsules INTEGER,
+#         doc1 BLOB,
+#         doc2 BLOB
+#     )
+# ''')
+#
+# # Creating the oxigym table
+# cursor.execute('''
+#     CREATE TABLE IF NOT EXISTS oxigym (
+#         Oxigyms_Name TEXT,
+#         established_year TEXT,
+#         District TEXT,
+#         State TEXT,
+#         pincode TEXT,
+#         address TEXT,
+#         capsules INTEGER,
+#         doc1 BLOB,
+#         doc2 BLOB
+#     )
+# ''')
+# conn.commit()
+# conn.close()
+#
 
 class ServiceRegisterForm1(MDScreen):
     password_valid = BooleanProperty(False)
