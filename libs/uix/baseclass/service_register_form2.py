@@ -3,14 +3,11 @@ import re
 import sqlite3
 import string
 import random
-
 import anvil
 from anvil.tables import app_tables
 from kivymd.toast import toast
-
 from server import Server
 from anvil import BlobMedia
-
 from kivy.core.window import Window
 from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.screen import MDScreen
