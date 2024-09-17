@@ -105,14 +105,14 @@ class ServiceProviderMain(MDScreen):
             print(f"Error reading user_data.json: {e}")
 
         # Assuming you have an endpoint to fetch data
-        data = app_tables.book_slot.search(book_date=date, serviceProvider_id=user_id)
+        data = app_tables.oxi_book_slot.search(book_date=date, serviceProvider_id=user_id)
         if not data:
             self.show_alert("No bookings yet on this date")
             return
 
         customers_list = []
         for row in data:
-            customer_details = app_tables.users.get(id=row['user_id'])
+            customer_details = app_tables.oxi_users.get(id=row['oxi_id'])
             customer = {}
             customer["name"] = customer_details['username']
             customer["email"] = customer_details['email']

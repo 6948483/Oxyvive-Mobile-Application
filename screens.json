@@ -175,6 +175,28 @@
         "object": "Settings()",
         "kv": "libs/uix/kv/client_settings.kv"
     },
+    "doctor_dashboard": {
+        "import": "from libs.uix.baseclass.doctor_dashboard import HomeScreen ",
+        "object": "HomeScreen()",
+        "kv": "libs/uix/kv/doctor_dashboard.kv"
+    },
+    "AppointmentScreen": {
+        "import": "from libs.uix.baseclass.doctor_dashboard import AppointmentScreen ",
+        "object": "AppointmentScreen()",
+        "kv": "libs/uix/kv/doctor_dashboard.kv"
+    },
+     "ProfileScreen": {
+        "import": "from libs.uix.baseclass.doctor_dashboard import ProfileScreen ",
+        "object": "ProfileScreen()",
+        "kv": "libs/uix/kv/doctor_dashboard.kv"
+    },
+    "AppointmentDetailScreen": {
+        "import": "from libs.uix.baseclass.doctor_dashboard import AppointmentDetailScreen ",
+        "object": "AppointmentDetailScreen()",
+        "kv": "libs/uix/kv/doctor_dashboard.kv"
+    },
+
+
     "Screen_name": {
         "import": "",
         "object": "()",
