@@ -1,0 +1,499 @@
+<HomeScreen>:
+    MDBoxLayout:
+        orientation: 'vertical'
+        padding: '10dp'
+
+        # Header Section - User name and profile
+        MDBoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: dp(60)
+            padding: dp(10), dp(10)
+            spacing: dp(10)
+
+            MDBoxLayout:
+                orientation: 'vertical'
+                MDLabel:
+                    text: "Hello,"
+                    font_style: "Subtitle1"
+                    halign: 'left'
+
+                MDLabel:
+                    text: "Prem"
+                    font_style: "H5"
+                    bold: True
+                    halign: 'left'
+                    color:1,0,0,.3
+
+            Widget:  # Spacer to push the profile picture to the right
+            MDBoxLayout:
+                size_hint: None, None
+                size: dp(50), dp(50)
+                pos_hint: {"center_y": .5}
+                FitImage:
+                    source: "images/profile.jpg"  # Replace with your image path
+                    allow_stretch: True
+                    keep_ratio: True
+                    radius: [dp(150), ]
+
+        # Appointment Today Section
+        MDBoxLayout:
+            orientation: 'horizontal'
+            padding: dp(10), 0
+            size_hint_y: None
+            height: dp(40)
+
+            MDLabel:
+                text: "Today's Appointment"
+                font_style: "Subtitle1"
+                halign: 'left'
+
+            MDTextButton:
+                text: "See All"
+                pos_hint: {'center_y': 0.5}
+                halign: "right"
+                on_release: root.see_all_appointments()
+
+        # Appointment Card
+        MDCard:
+            orientation: 'vertical'
+            padding: dp(5)
+            size_hint: None, None
+            size: dp(320), dp(140)
+            md_bg_color: app.theme_cls.primary_color
+            pos_hint: {"center_x": 0.5}
+
+            MDBoxLayout:
+                orientation: 'horizontal'
+                padding: dp(6)
+                spacing: dp(10)
+                MDBoxLayout:
+                    size_hint: None, None
+                    size: dp(50), dp(50)
+                    FitImage:
+                        source: "images/profile.jpg"  # Replace with doctor's image
+                        allow_stretch: True
+                        keep_ratio: True
+                        radius: [dp(150),]
+
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    spacing:dp(5)
+                    MDLabel:
+                        text: "Santosh Kumar"
+                        font_style: "Subtitle1"
+                        halign: 'left'
+                        color:1,1,1,1
+
+                    MDBoxLayout:
+                        orientation:'horizontal'
+                        spacing:dp(5)
+
+                        MDIcon:
+                            icon: "map-marker"  # Location icon (use "map-marker" instead of "location")
+                            size_hint: None, None
+                            size: dp(20), dp(20)  # Adjust the size of the icon
+                            color:1,1,1,1
+
+                        MDLabel:
+                            text: "Hebbal"
+                            font_style: "Caption"
+                            halign: 'left'  # Aligns the text to the left
+                            valign: 'center'  # Vertically centers the text
+                            color:1,1,1,1
+
+            MDSeparator:
+                height: dp(1)
+
+            MDBoxLayout:
+                orientation: 'horizontal'
+                spacing: dp(10)
+                MDCard:
+                    orientation: 'horizontal'
+                    padding: dp(5)
+                    spacing: dp(10)
+                    adaptive_height: True
+                    md_bg_color: 1,1,1,.2
+                    pos_hint: {"center_y": 0.5}
+                    elevation: 0
+                    MDIcon:
+                        icon: "calendar"
+                        size_hint: None, None
+                        size: dp(20), dp(20)
+                        valign: 'center'
+                        color:1,1,1,1
+                    MDLabel:
+                        text: "Monday, July 29"
+                        font_style: "Caption"
+                        halign: 'left'
+                        color:1,1,1,
+
+                    MDIcon:
+                        icon: "clock-outline"
+                        size_hint: None, None
+                        size: dp(20), dp(20)
+                        valign: 'center'
+                        color:1,1,1,1
+                    MDLabel:
+                        text: "11:00 AM - 12:00 PM"
+                        font_style: "Caption"
+                        halign: 'right'
+                        color:1,1,1,
+
+        # Categories Section
+        MDBoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: dp(120)
+            spacing: dp(5)
+            padding: dp(10), dp(0)
+
+            MDLabel:
+                text: "Categories"
+                font_style: "Subtitle1"
+                halign: 'left'
+                size_hint_y: None
+                height: dp(20)
+
+        MDBoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: dp(120)
+            spacing: dp(10)
+            padding: dp(10), dp(0)
+
+            MDBoxLayout:
+                orientation: 'vertical'
+                size_hint: None, None
+                size: dp(100), dp(120)
+                padding: dp(5), dp(5)
+                spacing: dp(5)
+
+                FitImage:
+                    source: "images/1.png"
+                    size_hint: None, None
+                    size: dp(100), dp(100)
+                    allow_stretch: True
+                    keep_ratio: True
+
+                MDLabel:
+                    text: "Oxi Clinic"
+                    font_style: "Caption"
+                    halign: 'center'
+                    valign: 'center'
+
+            MDBoxLayout:
+                orientation: 'vertical'
+                size_hint: None, None
+                size: dp(100), dp(120)
+                padding: dp(5), dp(5)
+                spacing: dp(5)
+
+                FitImage:
+                    source: "images/3.png"
+                    size_hint: None, None
+                    size: dp(100), dp(100)
+                    allow_stretch: True
+                    keep_ratio: True
+
+                MDLabel:
+                    text: "Oxi Wheel"
+                    font_style: "Caption"
+                    halign: 'center'
+                    valign: 'center'
+
+            MDBoxLayout:
+                orientation: 'vertical'
+                size_hint: None, None
+                size: dp(100), dp(120)
+                padding: dp(5), dp(5)
+                spacing: dp(5)
+
+                FitImage:
+                    source: "images/Gym-Logo.jpg"
+                    size_hint: None, None
+                    size: dp(100), dp(100)
+                    allow_stretch: True
+                    keep_ratio: True
+
+                MDLabel:
+                    text: "Oxi Gym"
+                    font_style: "Caption"
+                    halign: 'center'
+                    valign: 'center'
+
+        # Bottom Navigation
+        MDBottomNavigation:
+            MDBottomNavigationItem:
+                name: 'HomeScreen'
+                text: 'Home'
+                icon: 'home-outline'
+                padding_y: dp(10)
+                text_color_active: 1, 0, 0, 1
+                icon_color_active: 1, 0, 0, 1
+                on_tab_press: root.manager.push_replacement ("HomeScreen")
+
+            MDBottomNavigationItem:
+                name: 'AppointmentScreen'
+                text: 'Appointment'
+                icon: 'calendar-outline'
+                padding_y: dp(10)
+                text_color_active: 1, 0, 0, 1
+                icon_color_active: 1, 0, 0, 1
+                on_tab_press: root.manager.push_replacement("AppointmentScreen")
+
+            MDBottomNavigationItem:
+                name: 'ProfileScreen'
+                text: 'Profile'
+                icon: 'account-outline'
+                padding_y: dp(10)
+                text_color_active: 1, 0, 0, 1
+                icon_color_active: 1, 0, 0, 1
+                on_tab_press: root.manager.push_replacement("ProfileScreen")
+
+<AppointmentScreen>:
+
+    BoxLayout:
+        orientation: 'vertical'
+
+        MDLabel:
+            id: booking_status_label
+            text: "Upcoming Bookings"
+            halign: "center"
+            font_style: "H5"
+            size_hint_y: None
+            height: self.texture_size[1] + dp(20)
+            padding_y: dp(10)
+
+        BoxLayout:
+            orientation: 'horizontal'
+
+            MDNavigationRail:
+                # Add your MDNavigationRailItems here
+                MDNavigationRailItem:
+                    name: 'upcoming'
+                    text: 'Upcoming'
+                    icon: 'calendar-check'
+                    padding_y: dp(10)
+                    text_color_active: 1, 0, 0, 1
+                    icon_color_active: 1, 0, 0, 1
+                    on_press: app.root.get_screen('AppointmentScreen').load_appointments_by_status('Upcoming')
+
+                MDNavigationRailItem:
+                    name: 'complete'
+                    text: 'Complete'
+                    icon: 'check-circle'
+                    padding_y: dp(10)
+                    text_color_active: 1, 0, 0, 1
+                    icon_color_active: 1, 0, 0, 1
+                    on_press: app.root.get_screen('AppointmentScreen').load_appointments_by_status('Complete')
+
+                MDNavigationRailItem:
+                    name: 'cancel'
+                    text: 'Cancel'
+                    icon: 'cancel'
+                    padding_y: dp(10)
+                    text_color_active: 1, 0, 0, 1
+                    icon_color_active: 1, 0, 0, 1
+                    on_press: app.root.get_screen('AppointmentScreen').load_appointments_by_status('Cancel')
+
+            ScrollView:
+                MDBoxLayout:
+                    id: appointment_list
+                    orientation: 'vertical'
+                    padding: "10dp"
+                    spacing: "5dp"
+                    size_hint_y: None
+                    height: self.minimum_height
+# This is kivy file belonged to the Appointment details screen
+<AppointmentDetailScreen>:
+
+    MDBoxLayout:
+        orientation: 'vertical'
+        MDTopAppBar:
+            title: "Booking Details"
+            left_action_items: [["arrow-left", lambda x:root.back_button()]]
+        ScrollView:
+
+            MDBoxLayout:
+                orientation: 'vertical'
+                padding: dp(10)
+                spacing: dp(10)
+                MDCard:
+                    orientation: 'vertical'
+                    size_hint: None, None
+                    size: "380dp", "130dp"
+                    padding: "10dp"
+                    pos_hint: {"center_x": 0.5}
+                    MDLabel:
+                        text: "User Details"
+                        size_hint_y: None
+                        height: self.texture_size[1] + dp(10)
+
+                    MDLabel:
+                        id: username_label
+                        text: ""
+                        size_hint_y: None
+                        height: self.texture_size[1] + dp(10)
+
+                    MDLabel:
+                        id: service_type_label
+                        text: ""
+                        size_hint_y: None
+                        height: self.texture_size[1] + dp(10)
+
+                    MDLabel:
+                        id: date_time_label
+                        text: ""
+                        size_hint_y: None
+                        height: self.texture_size[1] + dp(10)
+
+                MDCard:
+                    orientation: 'vertical'
+                    size_hint: None, None
+                    size: "380dp", "180dp"
+                    padding: "10dp"
+                    pos_hint: {"center_x": 0.5}
+                    MDLabel:
+                        text: "Treatment DETAILS"
+                        font_style: "H6"
+                        halign: "left"
+                    MDLabel:
+                        text: "Desk number - HD 292, 10th floor, WeWork"
+                        halign: "left"
+                    MDLabel:
+                        text: "RMZ Latitude, Bellary Road, Hebbal, Near Godrej"
+                        halign: "left"
+                    MDLabel:
+                        text: " 4th Cross, Maruthi Nagar, Yelahanka"
+                        halign: "left"
+                    MDLabel:
+                        text: "Duration: 2 hours"
+                        halign: "left"
+                    MDLabel:
+                        text: "Booking Date and Time: Mon, 19 Aug 07:00 PM"
+                        halign: "left"
+                    MDLabel:
+                        text: "Booking ID: BI87420"
+                        halign: "left"
+
+                 # Invoice Details Card
+                MDCard:
+                    orientation: 'vertical'
+                    size_hint: None, None
+                    size: "380dp", "130dp"
+                    padding: "10dp"
+                    pos_hint: {"center_x": 0.5}
+
+                    MDLabel:
+                        text: "INVOICE"
+                        font_style: "H6"
+                        halign: "left"
+
+                    MDLabel:
+                        text: "Treatment Charges: ₹1"
+                        halign: "left"
+
+                    MDLabel:
+                        text: "Booking Fees & Convenience Charges: ₹19.27"
+                        halign: "left"
+
+                    MDLabel:
+                        text: "Total Fare: ₹1"
+                        halign: "left"
+# This is kivy file belonged to the Profile screen
+<ProfileScreen>:
+    MDBoxLayout:
+        orientation: 'vertical'
+        padding: dp(20)
+        spacing: dp(10)
+
+        # Header with back button and title
+        MDBoxLayout:
+            orientation: 'horizontal'
+            size_hint_y: None
+            height: dp(50)
+            spacing: dp(10)
+
+            MDIconButton:
+                icon: 'arrow-left'  # Left arrow icon
+                on_release: root.go_back()
+
+            MDLabel:
+                text: 'Doctor Details'
+                halign: 'center'
+                font_style: 'H6'
+                size_hint_x: None
+                width: dp(200)
+
+            MDIconButton:
+                icon:'logout'
+                on_release: root.logout()
+
+        # Centered Profile Picture
+        RelativeLayout:
+            size_hint_y: None
+            height: dp(100)  # Adjust height as needed
+
+            FitImage:
+                id: profile_image  # Give an ID to change the image
+                source: "images/profile.jpg"  # Add user profile picture path here
+                size_hint: None, None
+                size: dp(100), dp(100)
+                radius: [50,]
+                pos_hint: {'center_x': 0.5, 'center_y': 0.5}  # Centering the image
+
+
+        # Name Label
+        MDLabel:
+            text: 'Prem Kumar'
+            halign: 'center'  # Center the text
+            size_hint_y: None
+            height: dp(40)  # Set a height to create space below the image
+
+
+
+        # Grid Layout for additional info
+        GridLayout:
+            cols: 2
+            row_default_height: dp(40)
+            row_force_default: True
+            padding: dp(10)
+            spacing: dp(10)
+
+            MDLabel:
+                text: 'Email:'
+            MDLabel:
+                text: 'prem.kumar@example.com'  # Replace with actual email
+
+            MDLabel:
+                text: 'Date of Birth:'
+            MDLabel:
+                text: '01/01/1990'  # Replace with actual date of birth
+
+            MDLabel:
+                text: 'Gender:'
+            MDLabel:
+                text: 'Male'  # Replace with actual gender
+
+            MDLabel:
+                text: 'Mobile Number:'
+            MDLabel:
+                text: '+1234567890'  # Replace with actual mobile number
+
+            MDLabel:
+                text: 'Specialist:'
+            MDLabel:
+                text: 'Cardiologist'  # Replace with actual specialist
+
+            MDLabel:
+                text: 'License ID:'
+            MDLabel:
+                text: 'LIC123456'  # Replace with actual license ID
+
+
+
+
+
+
+
