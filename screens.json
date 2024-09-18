@@ -175,6 +175,26 @@
         "object": "Settings()",
         "kv": "libs/uix/kv/client_settings.kv"
     },
+    "service_dashboard": {
+        "import": "from libs.uix.baseclass.service_dashboard import ServiceDashboard",
+        "object": "ServiceDashboard()",
+        "kv": "libs/uix/kv/service_dashboard.kv"
+    },
+    "registration_steps": {
+        "import": "from libs.uix.baseclass.registration_steps import RegistrationSteps",
+        "object": "RegistrationSteps()",
+        "kv": "libs/uix/kv/registration_steps.kv"
+    },
+    "Clinic License": {
+        "import": "from libs.uix.baseclass.license_doc import LicenseDoc",
+        "object": "LicenseDoc()",
+        "kv": "libs/uix/kv/license_doc.kv"
+    },
+    "take_photo": {
+        "import": "from libs.uix.baseclass.license_doc2 import TakePhotoForDoc",
+        "object": "TakePhotoForDoc()",
+        "kv": "libs/uix/kv/license_doc2.kv"
+    },
     "doctor_dashboard": {
         "import": "from libs.uix.baseclass.doctor_dashboard import HomeScreen ",
         "object": "HomeScreen()",
@@ -195,8 +215,6 @@
         "object": "AppointmentDetailScreen()",
         "kv": "libs/uix/kv/doctor_dashboard.kv"
     },
-
-
     "Screen_name": {
         "import": "",
         "object": "()",

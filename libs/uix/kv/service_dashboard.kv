@@ -1,0 +1,340 @@
+<ServiceDashboard>:
+    # Bottom Navigation Bar
+    MDBottomNavigation:
+        panel_color: "white"
+        id:bottom_nav
+
+        MDBottomNavigationItem:
+            name: 'home'
+            text: 'Home'
+            icon: 'home'
+            on_tab_press: root.on_navigation('Home')
+            MDBoxLayout:
+                orientation: 'vertical'
+                padding: '10dp'
+
+                # Header Section - User name and profile
+                MDBoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: dp(60)
+                    padding: dp(10), dp(10)
+                    spacing: dp(10)
+
+                    MDBoxLayout:
+                        orientation: 'vertical'
+                        MDLabel:
+                            text: "Hello,"
+                            font_style: "Subtitle1"
+                            halign: 'left'
+
+                        MDLabel:
+                            text: "John Doe"
+                            font_style: "H5"
+                            bold: True
+                            halign: 'left'
+                            color:1,0,0,.3
+
+                    Widget:  # Spacer to push the profile picture to the right
+                    MDBoxLayout:
+                        size_hint: None, None
+                        size: dp(50), dp(50)
+                        pos_hint: {"center_y": .5}
+                        FitImage:
+                            source: "images/profile.jpg"  # Replace with your image path
+                            allow_stretch: True
+                            keep_ratio: True
+                            radius: [dp(150), ]
+
+                # Appointment Today Section
+                MDBoxLayout:
+                    orientation: 'horizontal'
+                    padding: dp(10), 0
+                    size_hint_y: None
+                    height: dp(40)
+
+                    MDLabel:
+                        text: "Today's Appointment"
+                        font_style: "Subtitle1"
+                        halign: 'left'
+
+                    MDTextButton:
+                        text: "See All"
+                        pos_hint: {'center_y': 0.5}
+                        halign: "right"
+                        on_release: root.see_all_appointments()
+
+                # Appointment Card
+                MDCard:
+                    orientation: 'vertical'
+                    padding: dp(5)
+                    size_hint: None, None
+                    size: dp(320), dp(140)
+                    md_bg_color: app.theme_cls.primary_color
+                    pos_hint: {"center_x": 0.5}
+
+                    MDBoxLayout:
+                        orientation: 'horizontal'
+                        padding: dp(6)
+                        spacing: dp(10)
+                        MDBoxLayout:
+                            size_hint: None, None
+                            size: dp(50), dp(50)
+                            FitImage:
+                                source: "images/profile.jpg"  # Replace with doctor's image
+                                allow_stretch: True
+                                keep_ratio: True
+                                radius: [dp(150),]
+
+                        MDBoxLayout:
+                            orientation: 'vertical'
+                            MDLabel:
+                                text: "Muhammed Syahid"
+                                font_style: "Subtitle1"
+                                halign: 'left'
+                                color:1,1,1,1
+                            MDLabel:
+                                text: "muhammeds@gmail.com"
+                                font_style: "Caption"
+                                halign: 'left'
+                                color:1,1,1,.5
+
+                    MDSeparator:
+                        height: dp(1)
+
+
+                    MDBoxLayout:
+                        orientation: 'horizontal'
+                        spacing: dp(10)
+                        MDCard:
+                            orientation: 'horizontal'
+                            padding: dp(5)
+                            spacing: dp(10)
+                            adaptive_height: True
+                            md_bg_color: 1,1,1,.2
+                            pos_hint: {"center_y": 0.5}
+                            elevation: 0
+                            elevation_color:1,1,1,1
+                            MDIcon:
+                                icon: "calendar"
+                                size_hint: None, None
+                                size: dp(20), dp(20)
+                                valign: 'center'
+                            MDLabel:
+                                text: "Monday, July 29"
+                                font_style: "Caption"
+                                halign: 'left'
+                                color:1,1,1,
+
+                            MDIcon:
+                                icon: "clock-outline"
+                                size_hint: None, None
+                                size: dp(20), dp(20)
+                                valign: 'center'
+                            MDLabel:
+                                text: "11:00 AM - 12:00 PM"
+                                font_style: "Caption"
+                                halign: 'right'
+                                color:1,1,1,
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y:None
+                    height:dp(50)
+                    spacing: dp(10)
+                    # Top Doctor Section
+                    MDLabel:
+                        text: "Upcoming Appointments"
+                        font_style: "Subtitle1"
+                        halign: 'left'
+                        padding: dp(10), dp(0)
+
+                # Scrollable Doctor List
+                ScrollView:
+                    MDList:
+                        id: doctor_list
+                        padding: dp(10), dp(10)
+                        spacing: dp(10)
+        MDBottomNavigationItem:
+            name: 'activity'
+            text: 'Activity'
+            icon: 'run'
+            on_tab_press: root.on_navigation('Activity')
+
+        MDBottomNavigationItem:
+            name: 'settings'
+            text: 'Settings'
+            icon: 'cog'
+            on_tab_press: root.on_navigation('Settings')
+
+        MDBottomNavigationItem:
+            name: 'service'
+            text: 'Service'
+            icon: 'account-wrench'
+            on_tab_press: root.on_navigation('Service')
+            MDBoxLayout:
+                orientation: 'vertical'
+
+                MDTopAppBar:
+                    title: "Oxivive "
+                    right_action_items: [["help-circle-outline", lambda x: app.on_help_click()]]
+                    elevation: 1
+                    md_bg_color: 1, 0, 0, 1  # Black background for top bar
+
+                MDLabel:
+                    text: "Choose how you want to earn with Oxivive"
+                    halign: "center"
+                    font_style: "H5"
+                    bold: True
+                    size_hint_y: None
+                    height: self.texture_size[1] + dp(30)
+                    padding_y: "10dp"
+
+                ScrollView:
+                    MDBoxLayout:
+                        orientation: 'vertical'
+                        size_hint_y: None
+                        height: self.minimum_height
+                        padding: dp(20)
+                        spacing: dp(10)
+
+                        MDCard:
+                            id: OxiClinic  # Proper ID binding
+                            orientation: 'horizontal'
+                            size_hint: None, None
+                            size: "320dp", "150dp"
+                            pos_hint: {"center_x": 0.5}
+                            md_bg_color: 1, 1, 1, 1
+                            border_radius: dp(10)
+                            elevation: 2
+                            shadow_radius: 4
+                            shadow_offset: 0, 2
+                            style: "outlined"
+                            line_color:0.2, 0.2, 0.2, 0.8,
+                            on_release: root.on_card_select("OxiClinic")  # Use id as reference
+
+                            BoxLayout:
+                                orientation: 'horizontal'
+                                padding: dp(10)
+
+                                MDBoxLayout:
+                                    orientation: 'vertical'
+                                    spacing: dp(10)
+
+                                    MDLabel:
+                                        id:registered_label
+                                        text: "OxiClinic"
+                                        font_style: "Subtitle1"
+                                        bold: True
+                                        markup: True
+                                        theme_text_color: "Primary"
+
+                                    MDLabel:
+                                        text: "Increase revenue by offering exclusive anti-aging treatments. Attract high-paying clients looking for professional services in a well-equipped clinic."
+                                        font_style: "Caption"
+                                        theme_text_color: "Secondary"
+
+                                # Widget:
+
+                                Image:
+                                    source: "images/clinic.png"
+                                    size_hint: None, None
+                                    size: "80dp", "80dp"
+                                    pos_hint: {"center_y": 0.7}
+
+                        MDCard:
+                            id: OxiWheel  # Proper ID binding
+                            orientation: 'horizontal'
+                            size_hint: None, None
+                            size: "320dp", "150dp"
+                            pos_hint: {"center_x": 0.5}
+                            md_bg_color: 1, 1, 1, 1
+                            border_radius: dp(10)
+                            elevation: 2
+                            shadow_radius: 4
+                            shadow_offset: 0, 2
+                            style: "outlined"
+                            line_color:0.2, 0.2, 0.2, 0.8,
+                            on_release: root.on_card_select("OxiWheel")
+
+                            BoxLayout:
+                                orientation: 'horizontal'
+                                padding: dp(10)
+
+                                MDBoxLayout:
+                                    orientation: 'vertical'
+                                    spacing: dp(10)
+
+                                    MDLabel:
+                                        text: "OxiWheel"
+                                        font_style: "Subtitle1"
+                                        bold: True
+                                        markup: True
+                                        theme_text_color: "Primary"
+
+                                    MDLabel:
+                                        text: "Maximize profits by offering urgent anti-aging treatment transportation. Partner with clients who demand quick, on-site services in emergencies."
+                                        font_style: "Caption"
+                                        theme_text_color: "Secondary"
+
+                                # Widget:
+
+                                Image:
+                                    source: "images/Wheel.png"
+                                    size_hint: None, None
+                                    size: "100dp", "100dp"
+                                    pos_hint: {"center_y": 0.7}
+
+                        MDCard:
+                            id: OxiGym  # Proper ID binding
+                            orientation: 'horizontal'
+                            size_hint: None, None
+                            size: "320dp", "150dp"
+                            pos_hint: {"center_x": 0.5}
+                            md_bg_color: 1, 1, 1, 1
+                            border_radius: dp(10)
+                            elevation:3
+                            shadow_radius: 4
+                            shadow_offset: 0, 2
+                            style: "outlined"
+                            line_color:0.2, 0.2, 0.2, 0.8,
+                            on_release:root.on_card_select("OxiGym")
+
+                            BoxLayout:
+                                orientation: 'horizontal'
+                                padding: dp(10)
+
+                                MDBoxLayout:
+                                    orientation: 'vertical'
+                                    spacing: dp(10)
+
+                                    MDLabel:
+                                        text: "OxiGym"
+                                        font_style: "Subtitle1"
+                                        bold: True
+                                        markup: True
+                                        theme_text_color: "Primary"
+
+                                    MDLabel:
+                                        text: "Expand your reach by providing at-Gym anti-aging therapies. This service allows you to tap into the premium market of clients seeking convenience and privacy."
+                                        font_style: "Caption"
+                                        theme_text_color: "Secondary"
+
+                                # Widget:
+
+                                Image:
+                                    source: "images/clinic.png"
+                                    size_hint: None, None
+                                    size: "80dp", "80dp"
+                                    pos_hint: {"center_y": 0.7}
+                BoxLayout:
+                    size_hint_y: None
+                    height: "60dp"
+                    padding:'20px'
+                    MDRaisedButton:
+                        id: continue_button
+                        text: "Continue"
+                        size_hint: 1,1
+                        pos_hint: {"center_x": 0.5}
+                        md_bg_color: 0.5, 0.5, 0.5, 1  # Gray color when disabled
+                        disabled: True
+                        on_release: root.on_continue_click()
