@@ -1,0 +1,96 @@
+<LicenseDoc>:
+    MDBoxLayout:
+        orientation: "vertical"
+        MDTopAppBar:
+            title: "Oxivive"
+            left_action_items: [["arrow-left", lambda x: root.go_back()]]
+            right_action_items: [['help-circle-outline', lambda x: root.open_help()]]
+            elevation: 2
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            padding: dp(20)
+            pos_hint: {"top": 0.85}
+
+            # Instruction Label
+            MDLabel:
+                id:instruction_label
+                text: "Enter your licence number and date of birth"
+                halign: "center"
+                font_style: "H6"
+                theme_text_color: "Primary"
+                size_hint_y: None
+                height: self.texture_size[1] + dp(10)
+
+            # Driving License image (Using a placeholder)
+            AsyncImage:
+                id:license_image
+                source: 'your_image_link_or_local_path.png'
+                size_hint_y: None
+                height: dp(150)
+                allow_stretch: True
+                keep_ratio: False
+
+            MDBoxLayout:
+                orientation: 'vertical'
+
+                # Label for Licence number field
+                MDLabel:
+                    id:license_label
+                    text: "Licence number"
+                    theme_text_color: "Primary"
+                    halign: "left"
+                    size_hint_y: None
+                    height: dp(40)
+
+                # Licence number field
+                MDTextField:
+                    id: license_field
+                    hint_text: ""
+                    text: ""
+                    mode: "rectangle"
+                    size_hint_y: None
+                    height: dp(60)
+
+            MDBoxLayout:
+                orientation: 'vertical'
+                # Label for Date of Birth field
+                MDLabel:
+                    id:dob_label
+                    text: "Date of birth"
+                    theme_text_color: "Primary"
+                    halign: "left"
+                    size_hint_y: None
+                    height: dp(40)
+
+                # Date of birth field (click to open Date Picker)
+                MDTextField:
+                    id: dob_field
+                    mode: "rectangle"
+                    size_hint_y: None
+                    height: dp(60)
+                    hint_text: "DOB"
+                    helper_text: "Enter a valid dd/mm/yyyy date"
+                    validator: "date"
+                    date_format: "dd/mm/yyyy"
+                    date_interval: "01/01/1900", None
+                    on_focus: if self.focus: root.show_date_picker()
+
+            # Upload document text as a button
+            MDTextButton:
+                text: "[u]Upload document instead[/u]"
+                markup: True
+                theme_text_color: "Primary"
+                pos_hint:{'center_x':.5}
+                size_hint_y: None
+                height: dp(40)
+                on_release: root.upload_document()
+
+            # Submit button at the bottom
+            MDRaisedButton:
+                text: 'Submit'
+                md_bg_color: app.theme_cls.primary_color
+                size_hint_y: None
+                height: dp(40)
+                pos_hint: {"center_x": 0.5}
+                on_release: root.submit_form()
