@@ -21,11 +21,31 @@ class ShotApp(MDApp):
         self.request_all_permissions()
 
     def on_start(self):
+        # Read the logged_in_data.json file to check if the user is logged in
         with open("logged_in_data.json", "r") as json_file:
             logged_in_data = json.load(json_file)
-        if logged_in_data["logged_in"]:
-            self.root.load_screen("client_services")
-            self.root.current = "client_services"
+
+        # If the user is logged in, check the user type and navigate accordingly
+        if logged_in_data.get("logged_in"):
+            user_type = logged_in_data.get("user_type")
+
+            if user_type == "client":
+                self.root.load_screen("client_services")
+                self.root.current = "client_services"
+
+            elif user_type == "doctor":
+                self.root.load_screen("doctor_dashboard")
+                self.root.current = "doctor_dashboard"
+
+            elif user_type == "service_provider":
+                self.root.load_screen("servicer_dashboard")
+                self.root.current = "servicer_dashboard"
+
+            else:
+                self.root.load_screen("main_sc")
+                self.root.current = "main_sc"
+
+        # If not logged in, redirect to the login screen
         else:
             self.root.load_screen("main_sc")
             self.root.current = "main_sc"

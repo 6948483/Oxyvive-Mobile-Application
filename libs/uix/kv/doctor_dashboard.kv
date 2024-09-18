@@ -19,6 +19,7 @@
                     halign: 'left'
 
                 MDLabel:
+                    id: username_label
                     text: "Prem"
                     font_style: "H5"
                     bold: True
@@ -31,6 +32,7 @@
                 size: dp(50), dp(50)
                 pos_hint: {"center_y": .5}
                 FitImage:
+                    id: profile_image
                     source: "images/profile.jpg"  # Replace with your image path
                     allow_stretch: True
                     keep_ratio: True
@@ -436,7 +438,7 @@
             height: dp(100)  # Adjust height as needed
 
             FitImage:
-                id: profile_image  # Give an ID to change the image
+                id: profile_image # Give an ID to change the image
                 source: "images/profile.jpg"  # Add user profile picture path here
                 size_hint: None, None
                 size: dp(100), dp(100)
@@ -446,7 +448,8 @@
 
         # Name Label
         MDLabel:
-            text: 'Prem Kumar'
+            id: username_label
+
             halign: 'center'  # Center the text
             size_hint_y: None
             height: dp(40)  # Set a height to create space below the image
@@ -462,9 +465,10 @@
             spacing: dp(10)
 
             MDLabel:
-                text: 'Email:'
+                text:'Email :'
             MDLabel:
-                text: 'prem.kumar@example.com'  # Replace with actual email
+                id: email_label
+
 
             MDLabel:
                 text: 'Date of Birth:'
@@ -475,11 +479,11 @@
                 text: 'Gender:'
             MDLabel:
                 text: 'Male'  # Replace with actual gender
+            MDLabel:
+                text:'Mobile Number: '
+            MDLabel:
+                id: phone_label
 
-            MDLabel:
-                text: 'Mobile Number:'
-            MDLabel:
-                text: '+1234567890'  # Replace with actual mobile number
 
             MDLabel:
                 text: 'Specialist:'

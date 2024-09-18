@@ -1,3 +1,5 @@
+import os
+import json
 from anvil.tables import app_tables
 from kivy.metrics import dp
 from kivy.uix.boxlayout import BoxLayout
@@ -15,6 +17,15 @@ from kivymd.uix.tab import MDTabs, MDTabsLabel, MDTabsBase
 
 
 class HomeScreen(Screen):
+    def on_pre_enter(self, *args):
+        def on_pre_enter(self, *args):
+            if os.path.exists('user_data.json'):
+                with open('user_data.json', 'r') as f:
+                    user_data = json.load(f)
+                username = user_data.get("username", "User")
+            else:
+                username = "Guest"  # Default username if no user data exists
+            self.ids.username_label.text = username
     def go_to_wheel(self):
         self.manager.current ="appointment"
     def go_to_gym(self):
@@ -209,6 +220,22 @@ class AppointmentDetailScreen(Screen):
 
 
 class ProfileScreen(Screen):
+    def on_enter(self):
+        if os.path.exists('user_data.json'):
+            with open('user_data.json', 'r') as json_file:
+                user_info = json.load(json_file)
+            # Update UI elements with user data
+            self.ids.profile_image.source = user_info.get('profile', '')  # Default to an empty string if not found
+            self.ids.username_label.text = user_info.get('username', 'Unknown User')
+            self.ids.email_label.text = user_info.get('email', 'No Email')
+            self.ids.phone_label.text = user_info.get('phone', 'No Phone Number')
+        else:
+            # Clear or set default values when no user data is available
+            self.ids.profile_image.source = ''  # No profile image
+            self.ids.username_label.text = 'Guest'
+            self.ids.email_label.text = 'No Email'
+            self.ids.phone_label.text = 'No Phone Number'
+
     def go_back(self):
 
         if not self.manager.has_screen("HomeScreen"):
@@ -216,6 +243,21 @@ class ProfileScreen(Screen):
         self.manager.current = "HomeScreen"
 
     def logout(self):
+        # Update logged_in_data.json to set logged_in status to False
+        if os.path.exists('logged_in_data.json'):
+            with open('logged_in_data.json', 'r+') as json_file:
+                logged_in_data = json.load(json_file)
+                logged_in_data["logged_in"] = False  # Set logged_in to False
+                json_file.seek(0)  # Go to the start of the file
+                json.dump(logged_in_data, json_file)  # Write the updated data
+                json_file.truncate()  # Remove any leftover data
+
+        # Delete the user_data.json file
+        if os.path.exists('user_data.json'):
+            os.remove('user_data.json')
+
+        # Navigate to the login screen
+        self.manager.load_screen('login')
         self.manager.current = "login"
 
 
