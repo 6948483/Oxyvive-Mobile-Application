@@ -1,12 +1,10 @@
 import base64
 import json
 import os
-
 import bcrypt
 import random
 import smtplib
 from email.message import EmailMessage
-
 from io import BytesIO
 from kivy.core.window import Window
 from kivy.metrics import dp
@@ -18,7 +16,6 @@ from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from twilio.rest import Client
 from anvil.tables import app_tables
-
 from server import Server
 
 
@@ -103,8 +100,8 @@ class Login(MDScreen):
                             profile_data = base64.b64encode(profile_data).decode('utf-8')
                         except (KeyError, AttributeError):
                             profile_data = ''
-                    logged_in = True
-                    logged_in_data = {'logged_in': logged_in}
+
+                    logged_in_data = {'logged_in': True, 'user_type': 'client'}
                     user_info = {'username': username, 'email': email, 'phone': phone, 'pincode': pincode,
                                  'password': password, 'profile': profile_data, 'id': id}
                     with open("logged_in_data.json", "w") as json_file:
@@ -128,6 +125,7 @@ class Login(MDScreen):
                     self.show_popup(
                         "Login successful!",
                         on_ok=self.open_servicer_dashboard
+
                     )
                     if user_anvil:
                         username = str(user_anvil["oxi_username"])
@@ -141,10 +139,10 @@ class Login(MDScreen):
                         except (KeyError, AttributeError):
                             profile_data = ''
                         id = user_anvil["oxi_id"]
-                    user_info = {'username': username, 'email': email, 'phone': phone, 'pincode': pincode,
-                                 'profile': profile_data, 'id': id, 'address': address}
-                    with open("user_data.json", "w") as json_file:
-                        json.dump(user_info, json_file)
+                        user_info = {'username': username, 'email': email, 'phone': phone, 'pincode': pincode,
+                                     'profile': profile_data, 'id': id, 'address': address}
+                        with open("user_data.json", "w") as json_file:
+                            json.dump(user_info, json_file)
                     self.manager.load_screen("servicer_dashboard")
                     screen = self.manager.get_screen("servicer_dashboard")
                     screen.ids.srv_username.text = user_info['username']
@@ -173,11 +171,17 @@ class Login(MDScreen):
                             profile_data = base64.b64encode(profile_data).decode('utf-8')
                         except (KeyError, AttributeError):
                             profile_data = ''
+
                         id = user_anvil["oxi_id"]
-                    user_info = {'username': username, 'email': email, 'phone': phone, 'pincode': pincode,
-                                 'profile': profile_data, 'id': id}
-                    with open("user_data.json", "w") as json_file:
-                        json.dump(user_info, json_file)
+                        user_info = {'username': username, 'email': email, 'phone': phone, 'pincode': pincode,
+                                     'profile': profile_data, 'id': id}
+
+                        logged_in_data = {'logged_in': True, 'user_type': 'doctor'}
+                        with open("logged_in_data.json", "w") as json_file:
+                            json.dump(logged_in_data, json_file)
+
+                        with open("user_data.json", "w") as json_file:
+                            json.dump(user_info, json_file)
                     self.manager.load_screen("doctor_dashboard")  # Load Doctor dashboard
                     screen = self.manager.get_screen("doctor_dashboard")
                     #screen.ids.doc_username.text = user_info['username']
@@ -187,7 +191,7 @@ class Login(MDScreen):
 
                     with open(profile_image_path, "wb") as profile_image_file:
                         profile_image_file.write(profile_texture)
-                    #screen.ids.profile_image.source = profile_image_path
+                    screen.ids.profile_image.source = profile_image_path
             else:
                 self.ids.login_email.error = True
                 self.ids.login_email.helper_text = "In-Correct email"
@@ -276,7 +280,9 @@ class Login(MDScreen):
         self.manager.current = 'client_services'
 
     def open_servicer_dashboard(self):
-        self.manager.current = 'servicer_dashboard'
+        self.manager.load_screen("service_dashboard")
+        self.manager.current = 'service_dashboard'
+
 
     def show_otp_screen(self, user_input, otp_value):
         self.manager.load_screen('otp')
