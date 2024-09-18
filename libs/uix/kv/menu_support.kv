@@ -1,100 +1,257 @@
+<Thank_You>:
+    MDBoxLayout:
+        orientation: 'vertical'
+        MDTopAppBar:
+            title: "Support        "
+            title_halign: 'center'
+            pos_hint: {"top": 1}
+            elevation: 0
+            md_bg_color: 1, 0, 0, 1
+            left_action_items: [['arrow-left', lambda x: root.go_back()]]
+        MDBoxLayout:
+            orientation: 'vertical'
+            MDCard:
+                orientation: 'vertical'
+                size_hint: None, None
+                size: "300dp", "400dp"
+                pos_hint: {"center_x": 0.5, "center_y": 0.5}
+                elevation: 5
+                padding: "24dp"
+                spacing: "12dp"
+                md_bg_color: app.theme_cls.primary_color
+                radius: [12, 12, 12, 12]
+
+                MDLabel:
+                    text: "Thank You."
+                    theme_text_color: "Custom"
+                    text_color: 1, 1, 1, 1
+                    font_style: "H4"
+                    halign: "center"
+
+                MDIcon:
+                    icon: "headset"
+                    size_hint: None, None
+                    size: "64dp", "64dp"
+                    pos_hint: {"center_x": 0.5}
+                    theme_text_color: "Custom"
+                    text_color: 1, 1, 1, 1
+
+                MDLabel:
+                    text: "We will reach your message shortly."
+                    theme_text_color: "Custom"
+                    text_color: 1, 1, 1, 1
+                    halign: "center"
+
+                MDRaisedButton:
+                    text: "HOME"
+                    pos_hint: {"center_x": 0.5}
+                    md_bg_color: 1, 1, 1, 1
+                    text_color: app.theme_cls.primary_color
+                    on_release: root.go_home()
+
+<Contact_Us>:
+    MDBoxLayout:
+        orientation: 'vertical'
+        MDTopAppBar:
+            title: "Support        "
+            title_halign: 'center'
+            pos_hint: {"top": 1}
+            elevation: 0
+            md_bg_color: 1, 0, 0, 1
+            left_action_items: [['arrow-left', lambda x: root.go_back()]]
+
+        MDBoxLayout:
+            orientation: 'vertical'
+            padding: "24dp"
+
+            MDBoxLayout:
+                size_hint_y: None
+                height: "100dp"
+                orientation: 'vertical'
+                Image:
+                    source: "images/shot.png"
+                    size_hint_y: None
+                    height: "80dp"
+                    allow_stretch: True
+
+            MDLabel:
+                text: "How can we help?"
+                halign: "center"
+                font_style: "H6"
+                theme_text_color: "Custom"
+                text_color: 0, 0, 0, 1
+                size_hint_y: None
+                height: "40dp"
+                padding: "0dp", "10dp"
+
+            MDCard:
+                orientation: 'vertical'
+                size_hint: None, None
+                size: "300dp", "350dp"
+                pos_hint: {"center_x": 0.5}
+                elevation: 3
+                padding: "24dp"
+                spacing: "12dp"
+                md_bg_color: 1, 1, 1, 1
+                radius: [12, 12, 12, 12]
+
+                MDTextField:
+                    id: name_field
+                    hint_text: "Name"
+                    text: ""
+                    size_hint_x: 1
+
+                MDTextField:
+                    id: email_field
+                    hint_text: "Email"
+                    helper_text: ''
+                    helper_text_mode: 'on_error'
+                    pos_hint: {"center_x": .5, "center_y": .85}
+                    text: ""
+                    size_hint_x: 1
+                    on_focus: root.helper()
+
+
+                MDTextField:
+                    id: message_field
+                    hint_text: "Message"
+                    multiline: True
+                    size_hint_x: 1
+                    height: "80dp"
+
+                MDBoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: "40dp"
+                    spacing: "10dp"
+
+                    MDTextField:
+                        id: screenshot_file_name
+                        hint_text: "Attach a screenshot"
+                        size_hint_x: 0.7
+                        readonly: True
+                        text: "No file chosen"
+
+                    MDRaisedButton:
+                        text: "Browse"
+                        size_hint_x: 0.3
+                        on_release: root.upload_photo()
+
+                MDRaisedButton:
+                    text: "SEND"
+                    pos_hint: {"center_x": 0.5}
+                    md_bg_color: app.theme_cls.primary_color
+                    on_release: root.send_message()
+
+<ExpandableMDCard>:
+    orientation: "vertical"
+    size_hint_y: None
+    height: self.minimum_height
+    md_bg_color: 1, 0.5, 0.5, 1  # Light red background color
+    on_release: root.toggle()
+    padding: dp(10)  # Padding around the content for better spacing
+    spacing: dp(5)  # Spacing between elements
+
+    BoxLayout:
+        id: header
+        size_hint_y: None
+        height: dp(50)
+        padding: dp(10), 0, dp(10), 0  # Padding for centering
+        spacing: dp(10)   # Remove spacing to avoid offset from the icon
+        pos_hint: {"center_x": .5}
+
+        MDIcon:
+            id: icon
+            size_hint: None, None
+            size: "48dp", "48dp"
+            pos_hint: {"center_y": .5}
+
+        MDLabel:
+            id: label
+            text: "Card Header"
+            halign: "center"  # Center the heading text
+            theme_text_color: "Primary"
+            font_style: "H6"
+            size_hint_x: 1  # Make the label take up full width
+            pos_hint: {"center_y": .5}
+
+    BoxLayout:
+        id: tips_box
+        orientation: 'vertical'
+        size_hint_y: None
+        height: 0  # Start collapsed
+        padding: dp(10), dp(10)  # Padding inside the tips box
+        spacing: dp(5)  # Spacing between tips
+
+
 <SupportPage>:
-    md_bg_color: rgba(255, 255, 255, 255)
-    MDIconButton:
-        icon: "arrow-left"
-        pos_hint: {"center_y": .96}
-        user_font_size: "20sp"
-        theme_text_color: "Custom"
-        text_color: rgba(35, 35, 35, 255)
-        on_release: root.support_back()
+    BoxLayout:
+        orientation: 'vertical'
 
-    MDIconButton:
-        icon: "dots-vertical"
-        pos_hint: {"center_x": 0.9, "center_y": 0.96}
-        user_font_size: "20sp"
-        theme_text_color: "Custom"
-        text_color: rgba(35, 35, 35, 255)
+        MDTopAppBar:
+            title: "Support"
+            title_halign: 'center'
+            pos_hint: {"top": 1}
+            elevation: 0
+            md_bg_color: 1, 0, 0, 1
+            left_action_items: [['arrow-left', lambda x: root.go_back()]]
 
-    MDLabel:
-        text: "Support"
-        font_name: "Roboto-Bold"
-        font_size: "20sp"
-        pos_hint: {"center_x": .55, "center_y":0.90}
-        color: rgba(35, 35, 35, 255)
+        MDBoxLayout:
+            orientation: 'vertical'
+            padding: dp(10)
+            size_hint_y: 0.5  # Image and label occupy 25% of the tab
+            Image:
+                source: "images/shot.png"  # Replace with your logo path
+                size_hint_y: 0.7  # Adjust height relative to the 25% layout
+                allow_stretch: True
+                keep_ratio: True
+            MDLabel:
+                text: "How can we help?"
+                halign: "center"
+                font_style: "H6"
+                theme_text_color: "Custom"
+                text_color: 0, 0, 0, 1  # Black color
+                size_hint_y: 0.3  # Label occupies the remaining space
+                height: "32dp"
 
-    OneLineIconListItem:
-        text: "Contact customer care"
-        pos_hint: {"center_x":0.55, "center_y":0.8}
-        on_release: root.show_customer_support_dialog()
-        IconLeftWidget:
-            icon: "face-agent"
+            MDBoxLayout:
+                orientation: "horizontal"
+                width: "350dp"  # Adjust width as needed
+                MDTextField:
+                    hint_text: "Search Help Center"
+                    size_hint_x: 1
+                    color_mode: "custom"
+                    line_color_focus: 1, 0, 0, 1  # Red color
+                    text_color: 0, 0, 0, 1  # Black color
+                    hint_text_color: 0.5, 0.5, 0.5, 1  # Grey color
+                    icon_right: "magnify"  # Correct property for the right icon
+                    icon_right_color: 1, 0, 0, 1  # Red color for the icon
+                    mode: "round"  # Set the text field to have rounded corners
+                    on_text: root.filter_help_list(self.text)  # Trigger search filter
 
-    OneLineIconListItem:
-        text: "Contact on-call Doctor"
-        pos_hint: {"center_x":0.55, "center_y":0.70}
-        on_release: root.show_doctor_dialog()
-        IconLeftWidget:
-            icon: "doctor"
+        ScrollView:
+            MDBoxLayout:
+                id: help_list
+                orientation: 'vertical'
+                spacing: dp(10)
+                padding: dp(10)
+                size_hint_y: None
+                height: self.minimum_height
+                # Center-align the content
+                pos_hint: {'center_x': 0.5}
+                size_hint_x: None
+                width: self.parent.width
 
-    MDLabel:
-        text: "Raise a ticket"
-        font_name: "Roboto"
-        font_size: "15sp"
-        pos_hint: {"center_x": .55, "center_y": .60}
-        color: rgba(35, 35, 35, 255)
-
-    TextInput:
-        id: issue_title
-        hint_text: "Issue Title"
-        font_name: "Roboto"
-        size_hint_y: 0.1
-        helper_text:'Required'
-        helper_text_mode:  'on_error'
-        required: True
-        pos_hint: {"center_x": .55, "center_y": .5}
-        background_color: 1, 1, 1, 0
-        foreground_color: rgba(0, 0, 59, 255)
-        cursor_color: rgba(35, 35, 35, 255)
-        font_size: "14sp"
-        cursor_width: "2sp"
-        multiline: False
-        write_tab: True
-        on_text_validate: root.clear_text_input()
-
-    TextInput:
-        id: issue_description
-        hint_text: "Issue description"
-        font_name: "Roboto"
-        size_hint_y: .1
-        helper_text:'Required'
-        helper_text_mode:  'on_error'
-        required: False
-        pos_hint: {"center_x": .55, "center_y": .4}
-        background_color: 1, 1, 1, 0
-        foreground_color: rgba(0, 0, 59, 255)
-        cursor_color: rgba(35, 35, 35, 255)
-        font_size: "14sp"
-        cursor_width: "2sp"
-        multiline: True
-        write_tab: True
-        on_text_validate: root.clear_text_input()
-
-    Button:
-        id: submit_ticket
-        text: "Submit Ticket"
-        size_hint: .5, .05
-        pos_hint: {"center_x": .3, "center_y": .2}
-        background_color: 0, 0, 0, 0
-        font_name: "Roboto"
-        canvas.before:
-            Color:
-                rgb: rgba(255, 0, 0, 255)
-            RoundedRectangle:
-                size: self.size
-                pos: self.pos
-                radius: [5]
-        on_release:
-            root.submit_ticket()
-            root.show_ticket_popup()
-<MDDialog>:
-    size_hint: 0.8, 0.3
+        MDBoxLayout:
+            size_hint_y: None
+            height: "60dp"
+            padding: "10dp"
+            spacing: "10dp"
+            MDFillRoundFlatButton:
+                text: "Contact Us"
+                size_hint_x: None
+                width: "200dp"
+                pos_hint: {"center_x": 0.5}
+                md_bg_color: 1, 0, 0, 1  # Red color
+                text_color: 1, 1, 1, 1  # White color
+                on_release: root.contact_us()

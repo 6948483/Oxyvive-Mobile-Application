@@ -66,7 +66,6 @@ class Login(MDScreen):
         user_anvil = None
         try:
             if self.server.is_connected():
-                # Fetch user from Anvil's database
                 if "@" in user_input:
                     user_anvil = app_tables.oxi_users.get(oxi_email=user_input)
                 else:
@@ -77,7 +76,6 @@ class Login(MDScreen):
                         self.show_popup("Invalid phone number format")
                         return
         finally:
-            # Close the connection
             if self.server.get_database_connection() and self.server.is_connected():
                 self.server.get_database_connection().close()
 
@@ -90,9 +88,9 @@ class Login(MDScreen):
             self.ids.login_password.helper_text = "In-Correct Password"
             print('Password : ', password_value)
             print('Password : ', password_value2)
+
             if user_type == 'client':
                 if password_value:
-
                     if user_anvil:
                         username = str(user_anvil["oxi_username"])
                         email = str(user_anvil["oxi_email"])
@@ -113,7 +111,6 @@ class Login(MDScreen):
                         json.dump(logged_in_data, json_file)
 
                     script_dir = os.path.dirname(os.path.abspath(__file__))
-                    # Construct the path to the JSON file within the script's directory
                     json_user_file_path = os.path.join(script_dir, "user_data.json")
                     with open(json_user_file_path, "w") as json_file:
                         json.dump(user_info, json_file)
@@ -126,7 +123,7 @@ class Login(MDScreen):
                     self.ids.login_email.helper_text = ""
                     self.ids.login_password.helper_text = ""
 
-            elif user_type == 'service provider':
+            elif user_type == 'Service Provider':
                 if password_value:
                     self.show_popup(
                         "Login successful!",
@@ -148,7 +145,7 @@ class Login(MDScreen):
                                  'profile': profile_data, 'id': id, 'address': address}
                     with open("user_data.json", "w") as json_file:
                         json.dump(user_info, json_file)
-                    self.manager.load_screen("servicer_dashdoard")
+                    self.manager.load_screen("servicer_dashboard")
                     screen = self.manager.get_screen("servicer_dashboard")
                     screen.ids.srv_username.text = user_info['username']
                     screen.ids.srv_email.text = user_info['email']
@@ -158,10 +155,43 @@ class Login(MDScreen):
                     with open(profile_image_path, "wb") as profile_image_file:
                         profile_image_file.write(profile_texture)
                     screen.ids.profile_image.source = profile_image_path
-        else:
-            self.ids.login_email.error = True
-            self.ids.login_email.helper_text = "In-Correct email"
-            self.ids.login_email.error = True
+
+            elif user_type == 'Doctor':  # New condition for Doctor user type
+                if password_value:
+                    self.show_popup(
+                        "Login successful!",
+                        on_ok=lambda:
+                        self.manager.push_replacement("doctor_dashboard")
+                    )
+                    if user_anvil:
+                        username = str(user_anvil["oxi_username"])
+                        email = str(user_anvil["oxi_email"])
+                        phone = str(user_anvil["oxi_phone"])
+                        pincode = str(user_anvil["oxi_pincode"])
+                        try:
+                            profile_data = user_anvil['oxi_profile'].get_bytes()
+                            profile_data = base64.b64encode(profile_data).decode('utf-8')
+                        except (KeyError, AttributeError):
+                            profile_data = ''
+                        id = user_anvil["oxi_id"]
+                    user_info = {'username': username, 'email': email, 'phone': phone, 'pincode': pincode,
+                                 'profile': profile_data, 'id': id}
+                    with open("user_data.json", "w") as json_file:
+                        json.dump(user_info, json_file)
+                    self.manager.load_screen("doctor_dashboard")  # Load Doctor dashboard
+                    screen = self.manager.get_screen("doctor_dashboard")
+                    #screen.ids.doc_username.text = user_info['username']
+                    #screen.ids.doc_email.text = user_info['email']
+                    profile_texture = base64.b64decode(profile_data)
+                    profile_image_path = "profile_image.png"
+
+                    with open(profile_image_path, "wb") as profile_image_file:
+                        profile_image_file.write(profile_texture)
+                    #screen.ids.profile_image.source = profile_image_path
+            else:
+                self.ids.login_email.error = True
+                self.ids.login_email.helper_text = "In-Correct email"
+                self.ids.login_email.error = True
 
     user_input = StringProperty('')
     otp_value = StringProperty('')

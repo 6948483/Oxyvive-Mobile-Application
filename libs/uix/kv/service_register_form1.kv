@@ -42,10 +42,9 @@
                         text_color_focus:0,0,0,1
                         hint_text_color:0,0,0,1
                         hint_text_color_focus:0,0,0,.5
-#                        on_text: root.on_name_change(*args)
 
                     MDTextField:
-                        id:service_provider_email
+                        id: service_provider_email
                         hint_text: "Email"
                         font_name: "Roboto"
                         pos_hint:{'center_x':.5}
@@ -58,14 +57,13 @@
                         text_color_focus:0,0,0,1
                         hint_text_color:0,0,0,1
                         hint_text_color_focus:0,0,0,.5
-#                        on_text: root.on_email_change(*args)
 
                     MDFloatLayout:
                         size_hint:.7,None
                         height: "60dp"
                         pos_hint: {"center_x": .5, "center_y": .5}
                         MDTextField:
-                            id:service_provider_password
+                            id: service_provider_password
                             hint_text: "Password"
                             font_name:"Roboto"
                             helper_text:''
@@ -98,7 +96,7 @@
                                 source: "images/eye-off.png" if not show_password_button.active else "images/eye.png"
 
                     MDTextField:
-                        id:service_provider_phoneno
+                        id: service_provider_phoneno
                         hint_text: "Phone No"
                         font_name: "Roboto"
                         pos_hint:{'center_x':.5}
@@ -113,10 +111,9 @@
                         hint_text_color:0,0,0,1
                         hint_text_color_focus:0,0,0,.5
                         input_filter:'int'
-#                        on_text: root.on_phoneno_change(*args)
 
                     MDTextField:
-                        id:service_provider_address
+                        id: service_provider_address
                         hint_text: "Address"
                         font_name: "Roboto"
                         pos_hint:{'center_x':.5}
@@ -129,7 +126,24 @@
                         text_color_focus:0,0,0,1
                         hint_text_color:0,0,0,1
                         hint_text_color_focus:0,0,0,.5
-#                        on_text: root.on_address_change(*args)
+
+                    MDBoxLayout:
+                        orientation: 'horizontal'
+                        size_hint: None, None
+                        size: dp(300), dp(40)
+                        pos_hint: {'center_x': .5}
+
+                        MDLabel:
+                            text: "User Type"
+                            size_hint: None, None
+                            size: dp(100), dp(40)
+                            pos_hint: {'center_x': .3}
+
+                        MDDropDownItem:
+                            id: user_type
+                            pos_hint: {'center_x': .5}
+                            text: "Choose User Type"
+                            on_release: root.open_dropdown()
 
         BoxLayout:
             orientation: 'vertical'
