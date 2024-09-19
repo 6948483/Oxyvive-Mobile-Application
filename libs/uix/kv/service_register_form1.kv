@@ -112,38 +112,22 @@
                         hint_text_color_focus:0,0,0,.5
                         input_filter:'int'
 
-                    MDTextField:
-                        id: service_provider_address
-                        hint_text: "Address"
-                        font_name: "Roboto"
-                        pos_hint:{'center_x':.5}
-                        size_hint:.7,None
-                        height: "30dp"
-                        multiline: False
-                        write_tab: False
-                        color_mode: 'custom'
-                        line_color_focus: 0, 0, 0, 1
-                        text_color_focus:0,0,0,1
-                        hint_text_color:0,0,0,1
-                        hint_text_color_focus:0,0,0,.5
+                    #MDTextField:
+                        #id: service_provider_address
+                        #hint_text: "Address"
+                        #font_name: "Roboto"
+                        #pos_hint:{'center_x':.5}
+                        #size_hint:.7,None
+                        #height: "30dp"
+                        #multiline: False
+                        #write_tab: False
+                        #color_mode: 'custom'
+                        #line_color_focus: 0, 0, 0, 1
+                        #text_color_focus:0,0,0,1
+                        #hint_text_color:0,0,0,1
+                        #hint_text_color_focus:0,0,0,.5
 
-                    MDBoxLayout:
-                        orientation: 'horizontal'
-                        size_hint: None, None
-                        size: dp(300), dp(40)
-                        pos_hint: {'center_x': .5}
 
-                        MDLabel:
-                            text: "User Type"
-                            size_hint: None, None
-                            size: dp(100), dp(40)
-                            pos_hint: {'center_x': .3}
-
-                        MDDropDownItem:
-                            id: user_type
-                            pos_hint: {'center_x': .5}
-                            text: "Choose User Type"
-                            on_release: root.open_dropdown()
 
         BoxLayout:
             orientation: 'vertical'
@@ -164,7 +148,7 @@
                     orientation: 'horizontal'
                     spacing: 0
                     MDLabel:
-                        text: "Next"
+                        text: "Signup"
                         font_name: "Roboto-Bold"
                         halign: "center"
                         text_color: 1, 0, 0, 1

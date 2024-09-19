@@ -1,42 +1,180 @@
 import os
 import json
+from server import Server
+from anvil import tables
 from anvil.tables import app_tables
 from kivy.metrics import dp
 from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.image import AsyncImage
 from kivy.uix.widget import Widget
 from kivymd.app import MDApp
 from kivy.uix.screenmanager import Screen, ScreenManager
 from kivy.lang import Builder
 import anvil.server
+from kivymd.uix.boxlayout import MDBoxLayout
 from kivymd.uix.button import MDRaisedButton, MDFlatButton
 from kivymd.uix.card import MDCard
 from kivymd.uix.fitimage import FitImage
 from kivymd.uix.label import MDLabel, MDIcon
 from kivymd.uix.button import MDRoundFlatButton
 from kivymd.uix.tab import MDTabs, MDTabsLabel, MDTabsBase
+anvil.server.connect("server_MQU7VM2VS3ZSCQL3SRGX3EZA-J25NXHNSQOR7LIWH")
 
 
 class HomeScreen(Screen):
-    def on_pre_enter(self, *args):
-        def on_pre_enter(self, *args):
-            if os.path.exists('user_data.json'):
-                with open('user_data.json', 'r') as f:
-                    user_data = json.load(f)
-                username = user_data.get("username", "User")
-            else:
-                username = "Guest"  # Default username if no user data exists
-            self.ids.username_label.text = username
-    def go_to_wheel(self):
-        self.manager.current ="appointment"
-    def go_to_gym(self):
-        self.manager.current = "appointment"
-    def go_to_clinic(self):
-        self.manager.current = "appointment"
 
-    def see_all_appointments(self):
-        if not self.manager.has_screen("AppointmentScreen"):
-            self.manager.add_widget(AppointmentScreen(name="AppointmentScreen"))
-        self.manager.current = "AppointmentScreen"
+    def on_enter(self):
+        # Fetch today's appointments when the screen is entered
+        self.fetch_todays_appointments()
+
+    def fetch_todays_appointments(self):
+        # Fetch the latest appointment details from the 'oxi_book_slot' table
+        appointments = app_tables.oxi_book_slot.search(
+            tables.order_by('oxi_book_date', ascending=False)
+        )
+        # Clear the existing appointments in the MDList
+        self.ids.today_appointments_list.clear_widgets()
+
+        # Populate the appointments in the list
+        for appointment in appointments:
+            self.add_appointment_card(appointment)
+
+    def add_appointment_card(self, appointment):
+        # Extract appointment details
+        doctor_name = appointment['oxi_username']
+        book_date = appointment['oxi_book_date']
+        book_time = appointment['oxi_book_time']
+        location = appointment['oxi_location']
+
+        # Access theme_cls from the running MDApp instance
+        theme_cls = MDApp.get_running_app().theme_cls
+
+        # Create a new card with the appointment details
+        card = MDCard(
+            orientation='vertical',
+            padding=dp(10),
+            size_hint=(None, None),
+            size=(dp(320), dp(140)),
+            md_bg_color=theme_cls.primary_color,  # Use theme color
+            pos_hint={"center_x": 0.5}
+        )
+
+        # Create a box layout to hold the card content
+        card_layout = MDBoxLayout(
+            orientation='horizontal',
+            padding=dp(6),
+            spacing=dp(10)
+        )
+
+        # Create a layout for the doctor's image
+        image_box = MDBoxLayout(
+            size_hint=(None, None),
+            size=(dp(50), dp(50))
+        )
+        image = FitImage(source="images/profile.jpg")  # Placeholder for doctor's image
+        image_box.add_widget(image)
+
+        # Create a layout for the doctor's details
+        info_box = MDBoxLayout(
+            orientation='vertical',
+            spacing=dp(5)
+        )
+
+        # Doctor's name label
+        name_label = MDLabel(
+            text=doctor_name,
+            font_style="Subtitle1",
+            halign='left',
+            color=(1, 1, 1, 1)
+        )
+
+        # Layout for location with icon
+        location_layout = MDBoxLayout(
+            orientation='horizontal',
+            spacing=dp(5)
+        )
+        location_icon = MDIcon(
+            icon='map-marker',
+            size_hint=(None, None),
+            size=(dp(20), dp(20)),
+            halign='left',
+            theme_text_color="Custom",
+            text_color=(1, 1, 1, 1)
+        )
+        location_label = MDLabel(
+            text=f"Location: {location}",
+            font_style="Caption",
+            halign='left',
+            color=(1, 1, 1, 1)
+        )
+        location_layout.add_widget(location_icon)
+        location_layout.add_widget(location_label)
+
+        # Layout for date and time with icons
+        date_time_layout = MDBoxLayout(
+            orientation='horizontal',
+            spacing=dp(10)
+        )
+
+        # Date icon and label
+        date_icon = MDIcon(
+            icon='calendar',
+            size_hint=(None, None),
+            size=(dp(20), dp(20)),
+            halign='left',
+            theme_text_color="Custom",
+            text_color=(1, 1, 1, 1)
+        )
+        date_label = MDLabel(
+            text=f"{book_date}",
+            font_style="Caption",
+            halign='left',
+            theme_text_color="Custom",
+            color=(1, 1, 1, 1)
+        )
+
+        # Time icon and label
+        time_icon = MDIcon(
+            icon='clock-outline',
+            size_hint=(None, None),
+            size=(dp(20), dp(20)),
+            halign='left',
+            theme_text_color="Custom",
+            text_color=(1, 1, 1, 1)
+        )
+        time_label = MDLabel(
+            text=f"{book_time}",
+            font_style="Caption",
+            halign='left',
+            color=(1, 1, 1, 1),
+            text_color=(1, 1, 1, 1)
+        )
+
+        # Add date and time icons/labels to layout
+        date_time_layout.add_widget(date_icon)
+        date_time_layout.add_widget(date_label)
+        date_time_layout.add_widget(time_icon)
+        date_time_layout.add_widget(time_label)
+
+        # Add name, location, and date-time layouts to the info box
+        info_box.add_widget(name_label)
+        info_box.add_widget(location_layout)
+        info_box.add_widget(date_time_layout)
+
+        # Add the image and info boxes to the card layout
+        card_layout.add_widget(image_box)
+        card_layout.add_widget(info_box)
+
+        # Add the layout to the card
+        card.add_widget(card_layout)
+
+        # Add the card to the MDList
+        self.ids.today_appointments_list.add_widget(card)
+
+        # Add spacing between this card and the next one
+        self.ids.today_appointments_list.add_widget(Widget(size_hint_y=None, height=dp(10)))
+
+
 class AppointmentScreen(Screen):
     doctor_oxi_id = None  # Placeholder for storing the doctor's oxi_id
 
