@@ -37,7 +37,7 @@ class ShotApp(MDApp):
                 self.root.load_screen("doctor_dashboard")
                 self.root.current = "doctor_dashboard"
 
-            elif user_type == "service_provider":
+            elif user_type == "vendor":
                 self.root.load_screen("servicer_dashboard")
                 self.root.current = "servicer_dashboard"
 

@@ -20,11 +20,10 @@
 
                 MDLabel:
                     id: username_label
-                    text: "Prem"
-                    font_style: "H5"
+                    text: "DR.William"
                     bold: True
                     halign: 'left'
-                    color:1,0,0,.3
+                    color: 1, 0, 0, .3
 
             Widget:  # Spacer to push the profile picture to the right
             MDBoxLayout:
@@ -56,176 +55,21 @@
                 halign: "right"
                 on_release: root.see_all_appointments()
 
-        # Appointment Card
-        MDCard:
-            orientation: 'vertical'
-            padding: dp(5)
-            size_hint: None, None
-            size: dp(320), dp(140)
-            md_bg_color: app.theme_cls.primary_color
-            pos_hint: {"center_x": 0.5}
-
+        ScrollView:
             MDBoxLayout:
-                orientation: 'horizontal'
-                padding: dp(6)
-                spacing: dp(10)
-                MDBoxLayout:
-                    size_hint: None, None
-                    size: dp(50), dp(50)
-                    FitImage:
-                        source: "images/profile.jpg"  # Replace with doctor's image
-                        allow_stretch: True
-                        keep_ratio: True
-                        radius: [dp(150),]
-
-                MDBoxLayout:
-                    orientation: 'vertical'
-                    spacing:dp(5)
-                    MDLabel:
-                        text: "Santosh Kumar"
-                        font_style: "Subtitle1"
-                        halign: 'left'
-                        color:1,1,1,1
-
-                    MDBoxLayout:
-                        orientation:'horizontal'
-                        spacing:dp(5)
-
-                        MDIcon:
-                            icon: "map-marker"  # Location icon (use "map-marker" instead of "location")
-                            size_hint: None, None
-                            size: dp(20), dp(20)  # Adjust the size of the icon
-                            color:1,1,1,1
-
-                        MDLabel:
-                            text: "Hebbal"
-                            font_style: "Caption"
-                            halign: 'left'  # Aligns the text to the left
-                            valign: 'center'  # Vertically centers the text
-                            color:1,1,1,1
-
-            MDSeparator:
-                height: dp(1)
-
-            MDBoxLayout:
-                orientation: 'horizontal'
-                spacing: dp(10)
-                MDCard:
-                    orientation: 'horizontal'
-                    padding: dp(5)
-                    spacing: dp(10)
-                    adaptive_height: True
-                    md_bg_color: 1,1,1,.2
-                    pos_hint: {"center_y": 0.5}
-                    elevation: 0
-                    MDIcon:
-                        icon: "calendar"
-                        size_hint: None, None
-                        size: dp(20), dp(20)
-                        valign: 'center'
-                        color:1,1,1,1
-                    MDLabel:
-                        text: "Monday, July 29"
-                        font_style: "Caption"
-                        halign: 'left'
-                        color:1,1,1,
-
-                    MDIcon:
-                        icon: "clock-outline"
-                        size_hint: None, None
-                        size: dp(20), dp(20)
-                        valign: 'center'
-                        color:1,1,1,1
-                    MDLabel:
-                        text: "11:00 AM - 12:00 PM"
-                        font_style: "Caption"
-                        halign: 'right'
-                        color:1,1,1,
-
-        # Categories Section
-        MDBoxLayout:
-            orientation: 'horizontal'
-            size_hint_y: None
-            height: dp(120)
-            spacing: dp(5)
-            padding: dp(10), dp(0)
-
-            MDLabel:
-                text: "Categories"
-                font_style: "Subtitle1"
-                halign: 'left'
+                id: today_appointments_list
+                orientation: 'vertical'
+                padding: dp(10)
+                spacing: dp(10)  # Adding spacing between cards
                 size_hint_y: None
-                height: dp(20)
-
-        MDBoxLayout:
-            orientation: 'horizontal'
-            size_hint_y: None
-            height: dp(120)
-            spacing: dp(10)
-            padding: dp(10), dp(0)
-
-            MDBoxLayout:
-                orientation: 'vertical'
-                size_hint: None, None
-                size: dp(100), dp(120)
-                padding: dp(5), dp(5)
-                spacing: dp(5)
-
-                FitImage:
-                    source: "images/1.png"
-                    size_hint: None, None
-                    size: dp(100), dp(100)
-                    allow_stretch: True
-                    keep_ratio: True
-
-                MDLabel:
-                    text: "Oxi Clinic"
-                    font_style: "Caption"
-                    halign: 'center'
-                    valign: 'center'
-
-            MDBoxLayout:
-                orientation: 'vertical'
-                size_hint: None, None
-                size: dp(100), dp(120)
-                padding: dp(5), dp(5)
-                spacing: dp(5)
-
-                FitImage:
-                    source: "images/3.png"
-                    size_hint: None, None
-                    size: dp(100), dp(100)
-                    allow_stretch: True
-                    keep_ratio: True
-
-                MDLabel:
-                    text: "Oxi Wheel"
-                    font_style: "Caption"
-                    halign: 'center'
-                    valign: 'center'
-
-            MDBoxLayout:
-                orientation: 'vertical'
-                size_hint: None, None
-                size: dp(100), dp(120)
-                padding: dp(5), dp(5)
-                spacing: dp(5)
-
-                FitImage:
-                    source: "images/Gym-Logo.jpg"
-                    size_hint: None, None
-                    size: dp(100), dp(100)
-                    allow_stretch: True
-                    keep_ratio: True
-
-                MDLabel:
-                    text: "Oxi Gym"
-                    font_style: "Caption"
-                    halign: 'center'
-                    valign: 'center'
+                height: self.minimum_height  # Dynamic height based on content
+                adaptive_height: True  # Adjust height dynamically based on content
 
         # Bottom Navigation
         MDBottomNavigation:
+
+
+
             MDBottomNavigationItem:
                 name: 'HomeScreen'
                 text: 'Home'
@@ -233,7 +77,7 @@
                 padding_y: dp(10)
                 text_color_active: 1, 0, 0, 1
                 icon_color_active: 1, 0, 0, 1
-                on_tab_press: root.manager.push_replacement ("HomeScreen")
+                on_tab_press: root.manager.push_replacement("HomeScreen")
 
             MDBottomNavigationItem:
                 name: 'AppointmentScreen'
@@ -252,6 +96,8 @@
                 text_color_active: 1, 0, 0, 1
                 icon_color_active: 1, 0, 0, 1
                 on_tab_press: root.manager.push_replacement("ProfileScreen")
+
+
 
 <AppointmentScreen>:
 
