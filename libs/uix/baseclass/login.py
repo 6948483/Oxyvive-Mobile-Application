@@ -120,7 +120,7 @@ class Login(MDScreen):
                     self.ids.login_email.helper_text = ""
                     self.ids.login_password.helper_text = ""
 
-            elif user_type == 'Service Provider':
+            elif user_type == 'vendor':
                 if password_value:
                     self.show_popup(
                         "Login successful!",
@@ -132,7 +132,7 @@ class Login(MDScreen):
                         email = str(user_anvil["oxi_email"])
                         phone = str(user_anvil["oxi_phone"])
                         pincode = str(user_anvil["oxi_pincode"])
-                        address = str(user_anvil['oxi_address'])
+                        # address = str(user_anvil['oxi_address'])
                         try:
                             profile_data = user_anvil['oxi_profile'].get_bytes()
                             profile_data = base64.b64encode(profile_data).decode('utf-8')
@@ -140,7 +140,7 @@ class Login(MDScreen):
                             profile_data = ''
                         id = user_anvil["oxi_id"]
                         user_info = {'username': username, 'email': email, 'phone': phone, 'pincode': pincode,
-                                     'profile': profile_data, 'id': id, 'address': address}
+                                     'profile': profile_data, 'id': id}
                         with open("user_data.json", "w") as json_file:
                             json.dump(user_info, json_file)
                     self.manager.load_screen("servicer_dashboard")
@@ -192,6 +192,88 @@ class Login(MDScreen):
                     with open(profile_image_path, "wb") as profile_image_file:
                         profile_image_file.write(profile_texture)
                     screen.ids.profile_image.source = profile_image_path
+
+            elif user_type == 'oxiwheel':  # New condition for Doctor user type
+                if password_value:
+                    self.show_popup(
+                        "Login successful!",
+                        on_ok=lambda:
+                        self.manager.push_replacement("oxiwheel_dashboard")
+                    )
+                    if user_anvil:
+                        username = str(user_anvil["oxi_username"])
+                        email = str(user_anvil["oxi_email"])
+                        phone = str(user_anvil["oxi_phone"])
+                        pincode = str(user_anvil["oxi_pincode"])
+                        try:
+                            profile_data = user_anvil['oxi_profile'].get_bytes()
+                            profile_data = base64.b64encode(profile_data).decode('utf-8')
+                        except (KeyError, AttributeError):
+                            profile_data = ''
+
+                        id = user_anvil["oxi_id"]
+                        user_info = {'username': username, 'email': email, 'phone': phone, 'pincode': pincode,
+                                     'profile': profile_data, 'id': id}
+
+                        logged_in_data = {'logged_in': True, 'user_type': 'oxiwheel'}
+                        with open("logged_in_data.json", "w") as json_file:
+                            json.dump(logged_in_data, json_file)
+
+                        with open("user_data.json", "w") as json_file:
+                            json.dump(user_info, json_file)
+                    self.manager.load_screen("oxiwheel_dashboard")  # Load Doctor dashboard
+                    screen = self.manager.get_screen("oxiwheel_dashboard")
+                    screen.ids.username.text = user_info['username']
+                    screen.ids.name.text = user_info['username']
+                    screen.ids.user_email.text = user_info['email']
+                    profile_texture = base64.b64decode(profile_data)
+                    profile_image_path = "profile_image.png"
+
+                    with open(profile_image_path, "wb") as profile_image_file:
+                        profile_image_file.write(profile_texture)
+                    screen.ids.profile_image.source = profile_image_path
+                    screen.ids.profile.source = profile_image_path
+
+            elif user_type == 'oxiclinic':  # New condition for Doctor user type
+                if password_value:
+                    self.show_popup(
+                        "Login successful!",
+                        on_ok=lambda:
+                        self.manager.push_replacement("oxiclinic_dashboard")
+                    )
+                    if user_anvil:
+                        username = str(user_anvil["oxi_username"])
+                        email = str(user_anvil["oxi_email"])
+                        phone = str(user_anvil["oxi_phone"])
+                        pincode = str(user_anvil["oxi_pincode"])
+                        try:
+                            profile_data = user_anvil['oxi_profile'].get_bytes()
+                            profile_data = base64.b64encode(profile_data).decode('utf-8')
+                        except (KeyError, AttributeError):
+                            profile_data = ''
+
+                        id = user_anvil["oxi_id"]
+                        user_info = {'username': username, 'email': email, 'phone': phone, 'pincode': pincode,
+                                     'profile': profile_data, 'id': id}
+
+                        logged_in_data = {'logged_in': True, 'user_type': 'oxiwheel'}
+                        with open("logged_in_data.json", "w") as json_file:
+                            json.dump(logged_in_data, json_file)
+
+                        with open("user_data.json", "w") as json_file:
+                            json.dump(user_info, json_file)
+                    self.manager.load_screen("oxiclinic_dashboard")  # Load Doctor dashboard
+                    screen = self.manager.get_screen("oxiclinic_dashboard")
+                    screen.ids.username.text = user_info['username']
+                    screen.ids.name.text = user_info['username']
+                    screen.ids.user_email.text = user_info['email']
+                    profile_texture = base64.b64decode(profile_data)
+                    profile_image_path = "profile_image.png"
+
+                    with open(profile_image_path, "wb") as profile_image_file:
+                        profile_image_file.write(profile_texture)
+                    screen.ids.profile_image.source = profile_image_path
+                    screen.ids.profile.source = profile_image_path
             else:
                 self.ids.login_email.error = True
                 self.ids.login_email.helper_text = "In-Correct email"
