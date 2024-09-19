@@ -1,0 +1,335 @@
+<TodayAppointment>:
+    size_hint_x: None
+    width: dp(300)
+    height: dp(160)
+
+    MDCard:
+        orientation: 'vertical'
+        padding: dp(5)
+        size_hint: None, None
+        size: dp(300), dp(140)
+        md_bg_color: app.theme_cls.primary_color
+        pos_hint: {"center_x": 0.5}
+
+        MDBoxLayout:
+            orientation: 'horizontal'
+            padding: dp(6)
+            spacing: dp(10)
+
+            MDBoxLayout:
+                size_hint: None, None
+                size: dp(50), dp(50)
+                FitImage:
+                    source: "images/profile.jpg"
+                    allow_stretch: True
+                    keep_ratio: True
+                    radius: [dp(150),]
+
+            MDBoxLayout:
+                orientation: 'vertical'
+                MDLabel:
+                    text: root.doctor_name
+                    font_style: "Subtitle1"
+                    halign: 'left'
+                    color: 1, 1, 1, 1
+                MDLabel:
+                    text: root.location
+                    font_style: "Caption"
+                    halign: 'left'
+                    color: 1, 1, 1, .5
+
+        MDSeparator:
+            height: dp(1)
+
+        MDBoxLayout:
+            orientation: 'horizontal'
+            spacing: dp(10)
+
+            MDCard:
+                orientation: 'horizontal'
+                padding: dp(5)
+                spacing: dp(2)
+                adaptive_height: True
+                md_bg_color: 1, 1, 1, .2
+                pos_hint: {"center_y": 0.5}
+                elevation: 0
+                MDIcon:
+                    icon: "calendar"
+                    size_hint: None, None
+                    size: dp(20), dp(20)
+                    valign: 'center'
+                MDLabel:
+                    text: root.book_date
+                    font_style: "Caption"
+                    halign: 'center'
+                    color: 1, 1, 1, 1
+
+                MDIcon:
+                    icon: "clock-outline"
+                    size_hint: None, None
+                    size: dp(20), dp(20)
+                    valign: 'center'
+                MDLabel:
+                    text: root.book_time
+                    font_style: "Caption"
+                    halign: 'center'
+                    color: 1, 1, 1, 1
+
+
+<ServiceDashboard>:
+    # Bottom Navigation Bar
+    MDBottomNavigation:
+        panel_color: "white"
+        id:bottom_nav
+
+        MDBottomNavigationItem:
+            name: 'home'
+            text: 'Home'
+            icon: 'home'
+            on_tab_press: root.on_navigation('Home')
+            MDBoxLayout:
+                orientation: 'vertical'
+                padding: '10dp'
+
+                # Header Section - User name and profile
+                MDBoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: dp(60)
+                    padding: dp(10), dp(10)
+                    spacing: dp(10)
+
+                    MDBoxLayout:
+                        orientation: 'vertical'
+                        MDLabel:
+                            text: "Hello,"
+                            font_style: "Subtitle1"
+                            halign: 'left'
+
+                        MDLabel:
+                            id:name
+                            text: "Oxi Wheel"
+                            font_style: "H5"
+                            bold: True
+                            halign: 'left'
+                            color:1,0,0,.3
+
+                    Widget:  # Spacer to push the profile picture to the right
+                    MDBoxLayout:
+                        size_hint: None, None
+                        size: dp(50), dp(50)
+                        pos_hint: {"center_y": .5}
+                        FitImage:
+                            id:profile
+                            source: "images/profile.jpg"  # Replace with your image path
+                            allow_stretch: True
+                            keep_ratio: True
+                            radius: [dp(150), ]
+
+                # Appointment Today Section
+                MDBoxLayout:
+                    orientation: 'horizontal'
+                    padding: dp(10), 0
+                    size_hint_y: None
+                    height: dp(40)
+
+                    MDLabel:
+                        text: "Today's Appointment"
+                        font_style: "Subtitle1"
+                        halign: 'left'
+
+                    MDTextButton:
+                        text: "See All"
+                        pos_hint: {'center_y': 0.5}
+                        halign: "right"
+                        on_release: root.see_all_appointments()
+                ScrollView:
+                    size_hint_y: None
+                    height: dp(160)
+                    adaptive_width:True
+                    do_scroll_x: True
+                    do_scroll_y: False  # Disable vertical scrolling
+                    bar_width: 0  # Hide scrollbar
+                    MDBoxLayout
+                        orientation: 'horizontal'
+                        spacing: dp(10)
+                        padding: dp(10), 0
+                        size_hint_x: None
+                        width: self.minimum_width
+                        id:today_appointments_list
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    size_hint_y:None
+                    height:dp(50)
+                    spacing: dp(10)
+                    # Top Doctor Section
+                    MDLabel:
+                        text: "Upcoming Appointments"
+                        font_style: "Subtitle1"
+                        halign: 'left'
+                        padding: dp(10), dp(0)
+
+                # Scrollable Doctor List
+                ScrollView:
+                    MDList:
+                        id: doctor_list
+                        padding: dp(10), dp(10)
+                        spacing: dp(10)
+        MDBottomNavigationItem:
+            name: 'activity'
+            text: 'Activity'
+            icon: 'run'
+            on_tab_press: root.on_navigation('Activity')
+
+        MDBottomNavigationItem:
+            name: 'settings'
+            text: 'Settings'
+            icon: 'cog'
+            on_tab_press: root.on_navigation('Settings')
+            BoxLayout:
+                orientation: 'vertical'
+
+                MDTopAppBar:
+                    title: 'My Account'
+
+                ScrollView:
+                    MDBoxLayout:
+                        orientation: 'vertical'
+                        padding: '10dp'
+                        spacing: dp(10)
+                        adaptive_height: True
+
+                        # Profile Card
+                        MDCard:
+                            orientation: 'vertical'
+                            padding: dp(5)
+                            size_hint_y: None
+                            height:dp(100)
+                            #md_bg_color: app.theme_cls.primary_color
+                            pos_hint: {"center_x": 0.5}
+                            elevation:1
+
+                            MDBoxLayout:
+                                orientation: 'horizontal'
+                                padding: dp(6)
+                                spacing: dp(10)
+                                MDBoxLayout:
+                                    size_hint: None, None
+                                    size: dp(80), dp(80)
+                                    FitImage:
+                                        id:profile_image
+                                        source: "images/profile.jpg"  # Replace with doctor's image
+                                        allow_stretch: True
+                                        keep_ratio: True
+                                        radius: [dp(150),]
+
+                                MDBoxLayout:
+                                    orientation: 'vertical'
+                                    MDLabel:
+                                        id:username
+                                        text: "Muhammed Syahid"
+                                        font_style: "Subtitle1"
+                                        halign: 'left'
+                                        # color:1,1,1,1
+                                    MDLabel:
+                                        id:user_email
+                                        text: "muhammeds@gmail.com"
+                                        font_style: "Caption"
+                                        halign: 'left'
+                                        # color:1,1,1,.5
+                                    MDLabel:
+                                        text: "View Profile  ›"
+                                        theme_text_color: "Custom"
+                                        text_color: [0, 0.6, 1, 1]  # Blue for link
+                                        font_size: "14sp"
+                        # Cards for Each Option
+                        MDCard:
+                            orientation: 'vertical'
+                            size_hint_y: None
+                            height: dp(65)
+                            elevation: 1
+                            radius: [dp(15)]
+                            MDList:
+                                OneLineAvatarIconListItem:
+                                    text: "Settings"
+                                    IconLeftWidget:
+                                        icon: "cog"
+                                    IconRightWidget:
+                                        icon: "chevron-right"
+                                        size_hint_x: None
+                                        width: dp(30)
+
+                        MDCard:
+                            orientation: 'vertical'
+                            size_hint_y: None
+                            height: dp(130)
+                            elevation: 1
+                            radius: [dp(15)]
+                            MDList:
+                                OneLineAvatarIconListItem:
+                                    text: "Transactions"
+                                    IconLeftWidget:
+                                        icon: "currency-inr"
+                                    IconRightWidget:
+                                        icon: "chevron-right"
+                                        size_hint_x: None
+                                        width: dp(30)
+                                OneLineAvatarIconListItem:
+                                    text: "SIPs"
+                                    IconLeftWidget:
+                                        icon: "database"
+                                    IconRightWidget:
+                                        icon: "chevron-right"
+                                        size_hint_x: None
+                                        width: dp(30)
+
+                        MDCard:
+                            orientation: 'vertical'
+                            size_hint_y: None
+                            height: dp(300)
+                            elevation: 1
+                            radius: [dp(15)]
+                            MDList:
+                                OneLineAvatarIconListItem:
+                                    text: "Share App"
+                                    IconLeftWidget:
+                                        icon: "share-outline"
+                                    IconRightWidget:
+                                        icon: "chevron-right"
+                                        size_hint_x: None
+                                        width: dp(30)
+                                OneLineAvatarIconListItem:
+                                    text: "Send Mail"
+                                    IconLeftWidget:
+                                        icon: "email-outline"
+                                    IconRightWidget:
+                                        icon: "chevron-right"
+                                        size_hint_x: None
+                                        width: dp(30)
+                                OneLineAvatarIconListItem:
+                                    text: "FAQs"
+                                    IconLeftWidget:
+                                        icon: "help-circle-outline"
+                                    IconRightWidget:
+                                        icon: "chevron-right"
+                                        size_hint_x: None
+                                        width: dp(30)
+                                OneLineAvatarIconListItem:
+                                    text: "Privacy Policy"
+                                    IconLeftWidget:
+                                        icon: "lock-outline"
+                                    IconRightWidget:
+                                        icon: "chevron-right"
+                                        size_hint_x: None
+                                        width: dp(30)
+                                OneLineAvatarIconListItem:
+                                    on_release:root.logout()
+                                    text: "Logout"
+                                    IconLeftWidget:
+                                        icon: "logout"
+                                    IconRightWidget:
+                                        icon: "chevron-right"
+                                        size_hint_x: None
+                                        width: dp(30)
+                                        on_release:root.logout()
+

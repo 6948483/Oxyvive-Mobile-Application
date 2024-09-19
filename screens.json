@@ -215,6 +215,16 @@
         "object": "AppointmentDetailScreen()",
         "kv": "libs/uix/kv/doctor_dashboard.kv"
     },
+    "oxiwheel_dashboard": {
+        "import": "from libs.uix.baseclass.oxiwheel_dashboard import ServiceDashboard",
+        "object": "ServiceDashboard()",
+        "kv": "libs/uix/kv/oxiwheel_dashboard.kv"
+    },
+    "oxiclinic_dashboard": {
+        "import": "from libs.uix.baseclass.oxiclinic_dashboard import ServiceDashboard",
+        "object": "ServiceDashboard()",
+        "kv": "libs/uix/kv/oxiclinic_dashboard.kv"
+    },
     "Screen_name": {
         "import": "",
         "object": "()",
