@@ -1,103 +1,124 @@
 <HomeScreen>:
-    MDBoxLayout:
-        orientation: 'vertical'
-        padding: '10dp'
-
-        # Header Section - User name and profile
-        MDBoxLayout:
-            orientation: 'horizontal'
-            size_hint_y: None
-            height: dp(60)
-            padding: dp(10), dp(10)
-            spacing: dp(10)
+    MDBottomNavigation:
+        # Tab for Home Screen
+        MDBottomNavigationItem:
+            name: 'home'
+            text: 'Home'
+            icon: 'home'
+            on_tab_press: root.manager.push_replacement("HomeScreen")
 
             MDBoxLayout:
                 orientation: 'vertical'
-                MDLabel:
-                    text: "Hello,"
-                    font_style: "Subtitle1"
-                    halign: 'left'
+                padding: '10dp'
 
-                MDLabel:
-                    id: username_label
-                    text: "DR.William"
-                    bold: True
-                    halign: 'left'
-                    color: 1, 0, 0, .3
+                # Header Section - User name and profile
+                MDBoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: dp(60)
+                    padding: dp(10), dp(10)
+                    spacing: dp(10)
 
-            Widget:  # Spacer to push the profile picture to the right
+                    MDBoxLayout:
+                        orientation: 'vertical'
+                        MDLabel:
+                            text: "Hello,"
+                            font_style: "Subtitle1"
+                            halign: 'left'
+
+                        MDLabel:
+                            id: username_label
+                            text: "DR.William"
+                            bold: True
+                            halign: 'left'
+                            color: 1, 0, 0, .3
+
+                    Widget:  # Spacer to push the profile picture to the right
+                    MDBoxLayout:
+                        size_hint: None, None
+                        size: dp(50), dp(50)
+                        pos_hint: {"center_y": .5}
+                        FitImage:
+                            id: profile_image
+                            source: "images/profile.jpg"  # Replace with your image path
+                            allow_stretch: True
+                            keep_ratio: True
+                            radius: [dp(150), ]
+
+                # Appointment Today Section
+                MDBoxLayout:
+                    orientation: 'horizontal'
+                    padding: dp(10), 0
+                    size_hint_y: None
+                    height: dp(40)
+
+                    MDLabel:
+                        text: "Upcoming Appointments"
+                        font_style: "Subtitle1"
+                        halign: 'left'
+
+                    MDTextButton:
+                        text: "See All"
+                        pos_hint: {'center_y': 0.5}
+                        halign: "right"
+                        on_release: root.see_all_appointments()
+
+                ScrollView:
+                    MDBoxLayout:
+                        id: today_appointments_list
+                        orientation: 'vertical'
+                        padding: dp(10)
+                        spacing: dp(10)  # Adding spacing between cards
+                        size_hint_y: None
+                        height: self.minimum_height  # Dynamic height based on content
+                        adaptive_height: True  # Adjust height dynamically based on content
+
+        # Tab for Profile Screen
+        MDBottomNavigationItem:
+            name: 'profile'
+            text: 'Profile'
+            icon: 'account'
+            on_tab_press: root.manager.push_replacement("ProfileScreen")
+
             MDBoxLayout:
-                size_hint: None, None
-                size: dp(50), dp(50)
-                pos_hint: {"center_y": .5}
-                FitImage:
-                    id: profile_image
-                    source: "images/profile.jpg"  # Replace with your image path
-                    allow_stretch: True
-                    keep_ratio: True
-                    radius: [dp(150), ]
-
-        # Appointment Today Section
-        MDBoxLayout:
-            orientation: 'horizontal'
-            padding: dp(10), 0
-            size_hint_y: None
-            height: dp(40)
-
-            MDLabel:
-                text: "Today's Appointment"
-                font_style: "Subtitle1"
-                halign: 'left'
-
-            MDTextButton:
-                text: "See All"
-                pos_hint: {'center_y': 0.5}
-                halign: "right"
-                on_release: root.see_all_appointments()
-
-        ScrollView:
-            MDBoxLayout:
-                id: today_appointments_list
                 orientation: 'vertical'
-                padding: dp(10)
-                spacing: dp(10)  # Adding spacing between cards
-                size_hint_y: None
-                height: self.minimum_height  # Dynamic height based on content
-                adaptive_height: True  # Adjust height dynamically based on content
+                padding: '10dp'
 
-        # Bottom Navigation
-        MDBottomNavigation:
+                MDBoxLayout:
+                    orientation: 'vertical'
+                    padding: dp(20)
 
+                    MDLabel:
+                        id: profile_name
+                        text: "Dr. William"
+                        font_style: "H5"
+                        halign: 'left'
 
+                    MDLabel:
+                        id: profile_email
+                        text: "william@example.com"
+                        font_style: "Subtitle1"
+                        halign: 'left'
 
-            MDBottomNavigationItem:
-                name: 'HomeScreen'
-                text: 'Home'
-                icon: 'home-outline'
-                padding_y: dp(10)
-                text_color_active: 1, 0, 0, 1
-                icon_color_active: 1, 0, 0, 1
-                on_tab_press: root.manager.push_replacement("HomeScreen")
+                    MDLabel:
+                        id: profile_phone
+                        text: "+1 234 567 890"
+                        font_style: "Subtitle1"
+                        halign: 'left'
 
-            MDBottomNavigationItem:
-                name: 'AppointmentScreen'
-                text: 'Appointment'
-                icon: 'calendar-outline'
-                padding_y: dp(10)
-                text_color_active: 1, 0, 0, 1
-                icon_color_active: 1, 0, 0, 1
-                on_tab_press: root.manager.push_replacement("AppointmentScreen")
+                # Profile Picture
+                MDBoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: dp(150)
+                    padding: dp(20)
 
-            MDBottomNavigationItem:
-                name: 'ProfileScreen'
-                text: 'Profile'
-                icon: 'account-outline'
-                padding_y: dp(10)
-                text_color_active: 1, 0, 0, 1
-                icon_color_active: 1, 0, 0, 1
-                on_tab_press: root.manager.push_replacement("ProfileScreen")
-
-
+                    FitImage:
+                        id: profile_picture
+                        source: 'images/profile.jpg'  # Replace with your image path
+                        allow_stretch: True
+                        keep_ratio: True
+                        radius: [dp(150), ]
 
 <AppointmentScreen>:
 
@@ -154,101 +175,161 @@
                     size_hint_y: None
                     height: self.minimum_height
 # This is kivy file belonged to the Appointment details screen
-<AppointmentDetailScreen>:
-
-    MDBoxLayout:
-        orientation: 'vertical'
-        MDTopAppBar:
-            title: "Booking Details"
-            left_action_items: [["arrow-left", lambda x:root.back_button()]]
-        ScrollView:
+<HomeScreen>:
+    MDBottomNavigation:
+        # Tab for Home Screen
+        MDBottomNavigationItem:
+            name: 'home'
+            text: 'Home'
+            icon: 'home'
+            on_tab_press: root.manager.push_replacement("HomeScreen")
 
             MDBoxLayout:
                 orientation: 'vertical'
-                padding: dp(10)
-                spacing: dp(10)
-                MDCard:
+                padding: '10dp'
+
+                # Header Section - User name and profile
+                MDBoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: dp(60)
+                    padding: dp(10), dp(10)
+                    spacing: dp(10)
+
+                    MDBoxLayout:
+                        orientation: 'vertical'
+                        MDLabel:
+                            text: "Hello,"
+                            font_style: "Subtitle1"
+                            halign: 'left'
+
+                        MDLabel:
+                            id: username_label
+                            text: "DR.William"
+                            bold: True
+                            halign: 'left'
+                            color: 1, 0, 0, .3
+
+                    Widget:  # Spacer to push the profile picture to the right
+                    MDBoxLayout:
+                        size_hint: None, None
+                        size: dp(50), dp(50)
+                        pos_hint: {"center_y": .5}
+                        FitImage:
+                            id: profile_image
+                            source: "images/profile.jpg"  # Replace with your image path
+                            allow_stretch: True
+                            keep_ratio: True
+                            radius: [dp(150), ]
+
+                # Appointment Today Section
+                MDBoxLayout:
+                    orientation: 'horizontal'
+                    padding: dp(10), 0
+                    size_hint_y: None
+                    height: dp(40)
+
+                    MDLabel:
+                        text: "Upcoming Appointments"
+                        font_style: "Subtitle1"
+                        halign: 'left'
+
+                    MDTextButton:
+                        text: "See All"
+                        pos_hint: {'center_y': 0.5}
+                        halign: "right"
+                        on_release: root.see_all_appointments()
+
+                ScrollView:
+                    MDBoxLayout:
+                        id: today_appointments_list
+                        orientation: 'vertical'
+                        padding: dp(10)
+                        spacing: dp(10)  # Adding spacing between cards
+                        size_hint_y: None
+                        height: self.minimum_height  # Dynamic height based on content
+                        adaptive_height: True  # Adjust height dynamically based on content
+
+        # Tab for Profile Screen
+        MDBottomNavigationItem:
+            name: 'profile'
+            text: 'Profile'
+            icon: 'account'
+            on_tab_press: root.manager.push_replacement("ProfileScreen")
+
+            MDBoxLayout:
+                orientation: 'vertical'
+                padding: '10dp'
+
+                MDBoxLayout:
                     orientation: 'vertical'
-                    size_hint: None, None
-                    size: "380dp", "130dp"
-                    padding: "10dp"
-                    pos_hint: {"center_x": 0.5}
-                    MDLabel:
-                        text: "User Details"
-                        size_hint_y: None
-                        height: self.texture_size[1] + dp(10)
+                    padding: dp(20)
 
                     MDLabel:
-                        id: username_label
-                        text: ""
-                        size_hint_y: None
-                        height: self.texture_size[1] + dp(10)
+                        id: profile_name
+                        text: "Dr. William"
+                        font_style: "H5"
+                        halign: 'left'
 
                     MDLabel:
-                        id: service_type_label
-                        text: ""
-                        size_hint_y: None
-                        height: self.texture_size[1] + dp(10)
+                        id: profile_email
+                        text: "william@example.com"
+                        font_style: "Subtitle1"
+                        halign: 'left'
 
                     MDLabel:
-                        id: date_time_label
-                        text: ""
-                        size_hint_y: None
-                        height: self.texture_size[1] + dp(10)
+                        id: profile_phone
+                        text: "+1 234 567 890"
+                        font_style: "Subtitle1"
+                        halign: 'left'
 
-                MDCard:
-                    orientation: 'vertical'
-                    size_hint: None, None
-                    size: "380dp", "180dp"
-                    padding: "10dp"
-                    pos_hint: {"center_x": 0.5}
-                    MDLabel:
-                        text: "Treatment DETAILS"
-                        font_style: "H6"
-                        halign: "left"
-                    MDLabel:
-                        text: "Desk number - HD 292, 10th floor, WeWork"
-                        halign: "left"
-                    MDLabel:
-                        text: "RMZ Latitude, Bellary Road, Hebbal, Near Godrej"
-                        halign: "left"
-                    MDLabel:
-                        text: " 4th Cross, Maruthi Nagar, Yelahanka"
-                        halign: "left"
-                    MDLabel:
-                        text: "Duration: 2 hours"
-                        halign: "left"
-                    MDLabel:
-                        text: "Booking Date and Time: Mon, 19 Aug 07:00 PM"
-                        halign: "left"
-                    MDLabel:
-                        text: "Booking ID: BI87420"
-                        halign: "left"
+                # Profile Picture
+                MDBoxLayout:
+                    orientation: 'horizontal'
+                    size_hint_y: None
+                    height: dp(150)
+                    padding: dp(20)
 
-                 # Invoice Details Card
-                MDCard:
-                    orientation: 'vertical'
-                    size_hint: None, None
-                    size: "380dp", "130dp"
-                    padding: "10dp"
-                    pos_hint: {"center_x": 0.5}
+                    FitImage:
+                        id: profile_picture
+                        source: 'images/profile.jpg'  # Replace with your image path
+                        allow_stretch: True
+                        keep_ratio: True
+                        radius: [dp(150), ]
 
-                    MDLabel:
-                        text: "INVOICE"
-                        font_style: "H6"
-                        halign: "left"
+# AppointmentDetailScreen to display the appointment details
+<AppointmentDetailScreen>:
+    name: 'AppointmentDetailScreen'
 
-                    MDLabel:
-                        text: "Treatment Charges: ₹1"
-                        halign: "left"
+    MDBoxLayout:
+        orientation: 'vertical'
+        padding: dp(20)
 
-                    MDLabel:
-                        text: "Booking Fees & Convenience Charges: ₹19.27"
-                        halign: "left"
+        MDLabel:
+            id: doctor_name
+            text: "Doctor Name"
+            font_style: "H5"
+            halign: 'center'
 
-                    MDLabel:
-                        text: "Total Fare: ₹1"
-                        halign: "left"
+        MDLabel:
+            id: appointment_time
+            text: "Appointment Time"
+            font_style: "Subtitle1"
+            halign: 'center'
+
+        MDLabel:
+            id: appointment_location
+            text: "Location"
+            font_style: "Subtitle1"
+            halign: 'center'
+
+        MDRaisedButton:
+            text: "Go Back"
+            pos_hint: {'center_x': 0.5}
+            on_release: app.root.current = 'home'
+
+
+
 # This is kivy file belonged to the Profile screen
 <ProfileScreen>:
     MDBoxLayout:
