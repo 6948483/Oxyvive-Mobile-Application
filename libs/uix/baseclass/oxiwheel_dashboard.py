@@ -1,3 +1,4 @@
+import datetime
 import json
 import os
 
@@ -26,7 +27,7 @@ class TodayAppointment(BoxLayout):
         self.book_time = book_time if book_time is not None else ""
         self.location = location if location is not None else ""
 
-class ServiceDashboard(MDScreen):
+class OxiwheelServiceDashboard(MDScreen):
     selected_card = None
     registered_card = ['OxiClinic', 'OxiGym']
 
@@ -41,80 +42,36 @@ class ServiceDashboard(MDScreen):
         except Exception as e:
             print(f"Error: {e}")
 
-    # def registered_cards(self):
-    #     for card_id in self.registered_card:
-    #         card = self.ids[card_id]
-    #         for child in card.walk():
-    #             if isinstance(child, MDLabel) and 'Oxi' in child.text:  # Adjust the logic if necessary
-    #                 card_label = child
-    #                 break
-    #         card_label.text = f'[b]{card_id}[/b] [color=#097003] [size=10sp][i]Registered[/i][/size] [font=Icons]check-bold;[/font][/color]'  # Styled text in white
-    #         card.md_bg_color = (0, 1, 0, 0.1)  # Green background for registered card
-    #         card.line_color = (0, 1, 0, 1)  # Green outline for registered card
-    #         continue_button = self.ids.continue_button
-    #         continue_button.disabled = False
-
-    def on_card_select(self, card_id):
-        # Deselect any previously selected card
-        if card_id in self.registered_card:
-            return  # Do nothing further if the card is registered
-        else:
-            if self.selected_card:
-                card = self.ids[self.selected_card]
-                card.md_bg_color = (1, 1, 1, 1)  # White background when deselected
-                card.line_color = (0.2, 0.2, 0.2, 0.8)  # Remove outline
-
-            # Select the new card
-            self.selected_card = card_id
-            selected_card = self.ids[card_id]
-            selected_card.md_bg_color = (1, 0, 0, 0.02)  # Keep background white
-            selected_card.line_color = (1, 0, 0, 1)  # Red outline when selected
-
-        # Enable the "Continue" button and change color to red
-        continue_button = self.ids.continue_button
-        continue_button.disabled = False
-        continue_button.md_bg_color = (1, 0, 0, 1)  # Red when enabled
-
     def on_help_click(self):
         print("Help clicked")
 
-    def on_continue_click(self):
-        if self.selected_card:
-            print(f"Selected card: {self.selected_card}")
-            self.manager.load_screen('oxiwheel_registration_steps')
-            screen = self.manager.get_screen('oxiwheel_registration_steps')
-            screen.selected_service = self.selected_card
-            self.manager.push_replacement('oxiwheel_registration_steps')
-
-        else:
-            print("No option selected")
-
     def on_enter(self):
         self.fetch_todays_appointments()
-        # self.on_card_select('OxiClinic')
-        # # Dynamically add doctor cards to the ScrollView's MDList
-        # self.registered_cards()
 
-        doctors = [
-            {"name": "Joshua Simorangkir", "specialty": "jsi@gmail.com", "rating": "13/09/2024",
-             "image": "images/profile.jpg"},
-            {"name": "Amelia Watson", "specialty": "ameliaw@gmail.com", "rating": "14/09/2024",
-             "image": "images/profile.jpg"},
-            {"name": "Joshua Simorangkir", "specialty": "jsi@gmail.com", "rating": "13/09/2024",
-             "image": "images/profile.jpg"},
-            {"name": "Amelia Watson", "specialty": "ameliaw@gmail.com", "rating": "14/09/2024",
-             "image": "images/profile.jpg"},
-            {"name": "Joshua Simorangkir", "specialty": "jsi@gmail.com", "rating": "13/09/2024",
-             "image": "images/profile.jpg"},
-            {"name": "Amelia Watson", "specialty": "ameliaw@gmail.com", "rating": "14/09/2024",
-             "image": "images/profile.jpg"},
-        ]
+        # doctors = [
+        #     {"name": "Joshua Simorangkir", "specialty": "jsi@gmail.com", "rating": "13/09/2024",
+        #      "image": "images/profile.jpg"},
+        #     {"name": "Amelia Watson", "specialty": "ameliaw@gmail.com", "rating": "14/09/2024",
+        #      "image": "images/profile.jpg"},
+        #     {"name": "Joshua Simorangkir", "specialty": "jsi@gmail.com", "rating": "13/09/2024",
+        #      "image": "images/profile.jpg"},
+        #     {"name": "Amelia Watson", "specialty": "ameliaw@gmail.com", "rating": "14/09/2024",
+        #      "image": "images/profile.jpg"},
+        #     {"name": "Joshua Simorangkir", "specialty": "jsi@gmail.com", "rating": "13/09/2024",
+        #      "image": "images/profile.jpg"},
+        #     {"name": "Amelia Watson", "specialty": "ameliaw@gmail.com", "rating": "14/09/2024",
+        #      "image": "images/profile.jpg"},
+        # ]
+        #
+        # for doctor in doctors:
+        #     self.add_doctor_card(doctor)
 
-        for doctor in doctors:
-            self.add_doctor_card(doctor)
-
-    def add_doctor_card(self, doctor):
+    def add_doctor_card(self, appointment):
+        doctor_name = appointment['oxi_username']
+        book_date = appointment['oxi_book_date'].strftime("%Y-%m-%d")  # Format date as string
+        location = appointment['oxi_location']
         # Create the card
+
         card = MDCard(
             orientation='horizontal',
             padding=(dp(10), dp(10)),
@@ -131,7 +88,7 @@ class ServiceDashboard(MDScreen):
 
         # Add the image (assuming it's a local image or a URL with AsyncImage)
         image = AsyncImage(
-            source=doctor['image'],
+            source="images/profile.jpg",
             allow_stretch=True,
             keep_ratio=True
         )
@@ -144,17 +101,17 @@ class ServiceDashboard(MDScreen):
 
         # Add the doctor's name, specialty, and rating labels
         name_label = MDLabel(
-            text=doctor['name'],
+            text=doctor_name,
             font_style="Subtitle2",
             halign='left'
         )
         specialty_label = MDLabel(
-            text=doctor['specialty'],
+            text=location,
             font_style="Caption",
             halign='left'
         )
         rating_label = MDLabel(
-            text=doctor['rating'],
+            text=book_date,
             font_style="Caption",
             halign='left'
         )
@@ -191,17 +148,72 @@ class ServiceDashboard(MDScreen):
         self.manager.load_screen('login')
         self.manager.current = "login"
 
+    def convert_time_to_datetime(self, time_str):
+        """
+        Converts a time string in 'H AM/PM' or 'H:MM AM/PM' format to a datetime.time object.
+        """
+        return datetime.datetime.strptime(time_str, '%I%p').time()
+
     def fetch_todays_appointments(self):
-        # Fetch the latest appointment details from the 'oxi_book_slot' table
+        servicer_id = "OW01234"  # Replace this with the actual servicer ID logic
+
+        # Fetch the latest appointment details based on servicer ID
         appointments = app_tables.oxi_book_slot.search(
-            tables.order_by('oxi_book_date', ascending=False)
+            tables.order_by('oxi_book_date', ascending=True),
+            oxi_servicer_id=servicer_id
         )
-        # Clear the existing appointments in the MDList
+
+        # Get today's date and current time
+        today = datetime.datetime.now().date()
+        current_time = datetime.datetime.now().time()
+
+        # Separate appointments into two categories
+        today_appointments = []
+        future_appointments = []
+        print(appointments)
+        for appointment in appointments:
+            print(appointment)
+            appointment_date = appointment['oxi_book_date']
+
+            # Parse the oxi_book_time string (e.g., '11am - 1pm')
+            appointment_time_range = appointment['oxi_book_time']
+            try:
+                # Debugging: Check time range string
+                print(f"Appointment time range: {appointment_time_range}")
+
+                # Split into start and end times
+                start_time_str, end_time_str = appointment_time_range.split(' - ')
+                start_time_24 = self.convert_time_to_datetime(start_time_str.strip())
+                end_time_24 = self.convert_time_to_datetime(end_time_str.strip())
+
+                # Debugging: Print converted times
+                print(f"Start time (24-hour format): {start_time_24}, End time (24-hour format): {end_time_24}")
+            except ValueError as e:
+                # If parsing fails, skip this appointment or handle the error
+                print(f"Error parsing time range for appointment: {e}")
+                continue
+
+            if appointment_date == today:
+                # Check if current time is within the appointment time range
+                if start_time_24>= current_time :
+                    today_appointments.append(appointment)  # It's today's and within the time range
+            elif appointment_date > today:
+                future_appointments.append(appointment)  # Anything from tomorrow onwards
+
+        # Clear the existing list in the UI
         self.ids.today_appointments_list.clear_widgets()
 
-        # Populate the appointments in the list
-        for appointment in appointments:
-            self.add_appointment_card(appointment)
+        # Now populate today's and upcoming appointments
+        for appointment in today_appointments:
+            self.add_appointment_card(appointment)  # Today’s gang ⏳
+
+        self.ids.doctor_list.clear_widgets()
+        for appointment in future_appointments:
+            self.add_doctor_card(appointment)  # Future dates gang 🚀
+
+        print(today_appointments)
+        print(future_appointments)
+
 
     def add_appointment_card(self, appointment):
         # Extract appointment details
