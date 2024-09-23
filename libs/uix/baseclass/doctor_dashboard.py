@@ -71,7 +71,10 @@ class HomeScreen(Screen):
             size_hint=(None, None),
             size=(dp(50), dp(50))
         )
-        image = FitImage(source="images/profile.jpg")  # Placeholder for doctor's image
+        image = FitImage(source="images/profile.jpg")
+        size_hint = (None, None),  # Disable size hints
+        size = (dp(50), dp(50)),  # Set desired width and height
+        # Placeholder for doctor's image
         image_box.add_widget(image)
 
         # Create a layout for the doctor's details
@@ -102,7 +105,7 @@ class HomeScreen(Screen):
             text_color=(1, 1, 1, 1)
         )
         location_label = MDLabel(
-            text=f"Location: {location}",
+            text=f" {location}",
             font_style="Caption",
             halign='left',
             color=(1, 1, 1, 1)
@@ -174,6 +177,16 @@ class HomeScreen(Screen):
         # Add spacing between this card and the next one
         self.ids.today_appointments_list.add_widget(Widget(size_hint_y=None, height=dp(10)))
 
+    def show_appointment_details(self, doctor_name, book_date, book_time, location):
+        # Switch to AppointmentDetailScreen and update the details
+        self.manager.current = 'AppointmentDetailScreen'
+
+        # Access the AppointmentDetailScreen and update the fields
+        detail_screen = self.manager.get_screen('AppointmentDetailScreen')
+        detail_screen.ids.doctor_name.text = doctor_name
+        detail_screen.ids.appointment_time.text = f"Time: {book_time}"
+        detail_screen.ids.appointment_location.text = f"Location: {location}"
+
 
 class AppointmentScreen(Screen):
     doctor_oxi_id = None  # Placeholder for storing the doctor's oxi_id
@@ -231,7 +244,7 @@ class AppointmentScreen(Screen):
         self.ids.appointment_list.clear_widgets()  # Clear existing widgets
 
         for appointment in appointments:
-            # The card creation logic as you have it
+            # The card creation logic
             card_container = BoxLayout(
                 orientation='vertical',
                 padding='10dp',
@@ -250,12 +263,13 @@ class AppointmentScreen(Screen):
                 radius=[dp(15), dp(15), dp(15), dp(15)],
             )
 
+            # Image layout
             image_layout = BoxLayout(
                 orientation='vertical',
                 size_hint_x=None,
                 width='50dp',
                 padding='5dp',
-                pos_hint={'center_y': 0.7}
+                pos_hint={'center_y': 0.5}  # Center align the image vertically
             )
             image_layout.add_widget(
                 FitImage(
@@ -266,11 +280,13 @@ class AppointmentScreen(Screen):
                 )
             )
 
+            # Text layout
             text_layout = BoxLayout(
                 orientation='vertical',
                 padding='8dp'
             )
 
+            # Username label
             text_layout.add_widget(
                 MDLabel(
                     text=f"{appointment['username']}",
@@ -278,9 +294,12 @@ class AppointmentScreen(Screen):
                     halign="left",
                     size_hint_y=None,
                     height='30dp',
-                    theme_text_color="Primary"
+                    theme_text_color="Custom",
+                    text_color=(1, 1, 1, 1)  # White text
                 )
             )
+
+            # Service type label
             text_layout.add_widget(
                 MDLabel(
                     text=f"{appointment['service_type']}",
@@ -288,10 +307,12 @@ class AppointmentScreen(Screen):
                     halign="left",
                     size_hint_y=None,
                     height='20dp',
-                    theme_text_color="Secondary"
+                    theme_text_color="Custom",
+                    text_color=(1, 1, 1, 1)  # White text
                 )
             )
 
+            # Date layout
             date_layout = BoxLayout(
                 orientation='horizontal',
                 spacing='5dp',
@@ -300,7 +321,8 @@ class AppointmentScreen(Screen):
             )
 
             date_layout.add_widget(
-                MDIcon(icon="calendar", size_hint_x=None, width='20dp', theme_text_color="Secondary")
+                MDIcon(icon="calendar", size_hint_x=None, width='20dp', theme_text_color="Custom",
+                       text_color=(1, 1, 1, 1))
             )
             date_layout.add_widget(
                 MDLabel(
@@ -309,22 +331,25 @@ class AppointmentScreen(Screen):
                     halign="left",
                     size_hint_y=None,
                     height='20dp',
-                    theme_text_color="Secondary"
+                    theme_text_color="Custom",
+                    text_color=(1, 1, 1, 1)  # White text
                 )
             )
 
             text_layout.add_widget(date_layout)
 
+            # Add image and text to the card
             card.add_widget(image_layout)
             card.add_widget(text_layout)
 
+            # Add card to the container
             card_container.add_widget(card)
             card_container.add_widget(
                 Widget(size_hint_y=None, height='5dp')  # Spacer to avoid overlap
             )
 
+            # Add container to the appointment list
             self.ids.appointment_list.add_widget(card_container)
-
 
     def show_appointment_detail(self, appointment):
         """
@@ -338,23 +363,10 @@ class AppointmentScreen(Screen):
 
 
 class AppointmentDetailScreen(Screen):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.appointment = None  # Placeholder for appointment data
-
-    def update_details(self, appointment):
-        """Update the screen with the appointment details."""
-        self.appointment = appointment
-        # Update the UI elements here with the appointment data
-        # For example:
-        self.ids.username_label.text = appointment['username']
-        self.ids.service_type_label.text = appointment['service_type']
-        self.ids.date_time_label.text = f"{appointment['date_time']}, {appointment['book_time']}"
-
     def back_button(self):
-        if not self.manager.has_screen("AppointmentScreen"):
-            self.manager.add_widget(AppointmentScreen(name="AppointmentScreen"))
-        self.manager.current = "AppointmentScreen"
+        # Navigate back to the previous screen
+        self.manager.current = 'home'
+
 
 
 class ProfileScreen(Screen):
